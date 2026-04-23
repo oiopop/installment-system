@@ -388,6 +388,17 @@
                     <span style="font-weight: bold; margin-left: 15px;"><i class="fas fa-user-tie"></i> المدير: <span id="topBarManagerName">---</span></span>
                 </div>
             </header>
+            <div class="no-print" id="syncStatusBar" style="background:#eff6ff;border-bottom:1px solid #dbeafe;padding:10px 30px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                <div style="font-weight:700;color:#1e3a8a;">
+                    <i class="fas fa-wifi" id="netStatusIcon"></i>
+                    <span id="netStatusText">جاري التحقق من الاتصال...</span>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <span id="pendingOpsBadge" style="background:#fff;border:1px solid #bfdbfe;color:#1d4ed8;padding:6px 10px;border-radius:999px;font-size:0.9rem;">عمليات معلقة: 0</span>
+                    <button class="btn btn-primary" style="padding:8px 14px;font-size:0.9rem;" onclick="syncPendingOperations()"><i class="fas fa-rotate"></i> مزامنة الآن</button>
+                </div>
+            </div>
+
 
             <div class="content-area">
                 
@@ -753,7 +764,12 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentCompanySettings = {};
+        
+        const LOCAL_SETTINGS_KEY = 'installment_settings_cache_v1';
+        const LOCAL_CLIENTS_KEY = 'installment_clients_cache_v1';
+        const LOCAL_PENDING_KEY = 'installment_pending_ops_v1';
+
+let currentCompanySettings = {};
         let allClientsData = [];
         let logoBase64 = "";
         let currentActiveClientForPayment = null;
@@ -854,6 +870,154 @@
             reader.readAsDataURL(file);
         });
 
+
+        const isOnline = () => navigator.onLine;
+        const readLocalJson = (key, fallback) => {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (e) {
+                return fallback;
+            }
+        };
+        const writeLocalJson = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+        const getPendingOperations = () => readLocalJson(LOCAL_PENDING_KEY, []);
+        const setPendingOperations = (ops) => {
+            writeLocalJson(LOCAL_PENDING_KEY, ops);
+            updateSyncStatusUI();
+        };
+        const queuePendingOperation = (op) => {
+            const ops = getPendingOperations();
+            ops.push({ id: `PEND-${Date.now()}-${Math.random().toString(36).slice(2,8)}`, createdAt: new Date().toISOString(), ...op });
+            setPendingOperations(ops);
+        };
+        const cacheClientsLocally = (clients) => writeLocalJson(LOCAL_CLIENTS_KEY, clients);
+        const loadCachedClients = () => {
+            allClientsData = readLocalJson(LOCAL_CLIENTS_KEY, []);
+            renderDashboard();
+            renderClientsList();
+            populateClientNamesList();
+        };
+        const cacheSettingsLocally = (settings) => writeLocalJson(LOCAL_SETTINGS_KEY, settings || {});
+        const applySettingsToUi = () => {
+            document.getElementById('setCompanyName').value = currentCompanySettings.companyName || '';
+            document.getElementById('setManagerName').value = currentCompanySettings.managerName || '';
+            document.getElementById('setPhone').value = currentCompanySettings.phone || '';
+            document.getElementById('setWhatsapp').value = currentCompanySettings.whatsapp || '';
+            document.getElementById('setAddress').value = currentCompanySettings.address || '';
+            document.getElementById('setReceiptNote').value = currentCompanySettings.receiptNote || '';
+            if (currentCompanySettings.logoUrl) {
+                logoBase64 = currentCompanySettings.logoUrl;
+                document.getElementById('logoPreview').src = logoBase64;
+                document.getElementById('logoPreview').style.display = 'block';
+            } else {
+                logoBase64 = '';
+                document.getElementById('logoPreview').src = '';
+                document.getElementById('logoPreview').style.display = 'none';
+            }
+            document.getElementById('sidebarCompanyName').textContent = currentCompanySettings.companyName || 'النظام الإداري';
+            document.getElementById('topBarManagerName').textContent = currentCompanySettings.managerName || 'المدير';
+        };
+        const findClientIndexById = (clientId) => allClientsData.findIndex(c => c.id === clientId);
+        const updateClientInLocalCache = (clientId, updater) => {
+            const index = findClientIndexById(clientId);
+            if (index === -1) return null;
+            const updated = typeof updater === 'function' ? updater(structuredClone(allClientsData[index])) : updater;
+            allClientsData[index] = updated;
+            cacheClientsLocally(allClientsData);
+            renderDashboard();
+            renderClientsList();
+            populateClientNamesList();
+            return updated;
+        };
+        const addClientToLocalCache = (client) => {
+            allClientsData.push(client);
+            cacheClientsLocally(allClientsData);
+            renderDashboard();
+            renderClientsList();
+            populateClientNamesList();
+        };
+        const removeClientFromLocalCache = (clientId) => {
+            allClientsData = allClientsData.filter(c => c.id !== clientId);
+            cacheClientsLocally(allClientsData);
+            renderDashboard();
+            renderClientsList();
+            populateClientNamesList();
+        };
+        const updateSyncStatusUI = () => {
+            const online = isOnline();
+            const pending = getPendingOperations().length;
+            const textEl = document.getElementById('netStatusText');
+            const iconEl = document.getElementById('netStatusIcon');
+            const badgeEl = document.getElementById('pendingOpsBadge');
+            if (textEl) {
+                textEl.textContent = online ? 'متصل بالإنترنت' : 'وضع أوفلاين';
+            }
+            if (iconEl) {
+                iconEl.className = online ? 'fas fa-wifi' : 'fas fa-wifi-slash';
+            }
+            if (badgeEl) {
+                badgeEl.textContent = `عمليات معلقة: ${pending}`;
+                badgeEl.style.color = pending ? '#b45309' : '#1d4ed8';
+                badgeEl.style.borderColor = pending ? '#fcd34d' : '#bfdbfe';
+                badgeEl.style.background = pending ? '#fffbeb' : '#fff';
+            }
+        };
+
+        window.syncPendingOperations = async () => {
+            if (!isOnline()) {
+                alert('لا يوجد اتصال بالإنترنت حالياً.');
+                return;
+            }
+            let pending = getPendingOperations();
+            if (!pending.length) {
+                updateSyncStatusUI();
+                alert('لا توجد عمليات معلقة.');
+                return;
+            }
+            showLoader();
+            const remaining = [];
+            try {
+                for (const op of pending) {
+                    try {
+                        if (op.type === 'save_settings') {
+                            await setDoc(doc(db, 'settings', 'business_info'), op.data);
+                        } else if (op.type === 'add_client') {
+                            await setDoc(doc(db, 'clients', op.client.id), op.client);
+                        } else if (op.type === 'add_payment') {
+                            await updateDoc(doc(db, 'clients', op.clientId), {
+                                cumulativePaid: op.updatedPaid,
+                                nextDueDate: op.nextDueDate,
+                                payments: op.updatedPayments
+                            });
+                        } else if (op.type === 'delete_payment') {
+                            await updateDoc(doc(db, 'clients', op.clientId), {
+                                payments: op.updatedPayments,
+                                cumulativePaid: op.updatedPaid
+                            });
+                        } else if (op.type === 'delete_client') {
+                            await deleteDoc(doc(db, 'clients', op.clientId));
+                        }
+                    } catch (err) {
+                        remaining.push(op);
+                    }
+                }
+                setPendingOperations(remaining);
+                await loadSettings();
+                await loadAllClients();
+                updateSyncStatusUI();
+                alert(remaining.length ? 'تمت مزامنة جزء من العمليات وبقي بعضها معلقاً.' : 'تمت مزامنة كل العمليات.');
+            } finally {
+                hideLoader();
+            }
+        };
+
+        window.addEventListener('online', () => {
+            updateSyncStatusUI();
+            if (getPendingOperations().length) window.syncPendingOperations();
+        });
+        window.addEventListener('offline', updateSyncStatusUI);
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('login-screen').style.display = 'none';
@@ -950,32 +1114,23 @@
 
         async function loadSettings() {
             try {
-                const docRef = doc(db, 'settings', 'business_info');
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    currentCompanySettings = docSnap.data();
-
-                    document.getElementById('setCompanyName').value = currentCompanySettings.companyName || '';
-                    document.getElementById('setManagerName').value = currentCompanySettings.managerName || '';
-                    document.getElementById('setPhone').value = currentCompanySettings.phone || '';
-                    document.getElementById('setWhatsapp').value = currentCompanySettings.whatsapp || '';
-                    document.getElementById('setAddress').value = currentCompanySettings.address || '';
-                    document.getElementById('setReceiptNote').value = currentCompanySettings.receiptNote || '';
-
-                    if (currentCompanySettings.logoUrl) {
-                        logoBase64 = currentCompanySettings.logoUrl;
-                        document.getElementById('logoPreview').src = logoBase64;
-                        document.getElementById('logoPreview').style.display = 'block';
+                if (isOnline()) {
+                    const docRef = doc(db, 'settings', 'business_info');
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        currentCompanySettings = docSnap.data();
+                        cacheSettingsLocally(currentCompanySettings);
                     } else {
-                        logoBase64 = '';
-                        document.getElementById('logoPreview').src = '';
-                        document.getElementById('logoPreview').style.display = 'none';
+                        currentCompanySettings = readLocalJson(LOCAL_SETTINGS_KEY, {});
                     }
-
-                    document.getElementById('sidebarCompanyName').textContent = currentCompanySettings.companyName || 'النظام الإداري';
-                    document.getElementById('topBarManagerName').textContent = currentCompanySettings.managerName || 'المدير';
+                } else {
+                    currentCompanySettings = readLocalJson(LOCAL_SETTINGS_KEY, {});
                 }
+                applySettingsToUi();
+                updateSyncStatusUI();
             } catch (error) {
+                currentCompanySettings = readLocalJson(LOCAL_SETTINGS_KEY, {});
+                applySettingsToUi();
                 console.error('Error loading settings:', error);
             }
         }
@@ -1011,33 +1166,44 @@
                 logoUrl: logoBase64 || ''
             };
             try {
-                if (data.logoUrl.length > 95000) {
-                    throw new Error('حجم الشعار كبير جداً. اختر صورة أصغر أو أبسط.');
-                }
-                await setDoc(doc(db, 'settings', 'business_info'), data);
+                if (data.logoUrl.length > 95000) throw new Error('حجم الشعار كبير جداً. اختر صورة أصغر.');
                 currentCompanySettings = data;
-                document.getElementById('sidebarCompanyName').textContent = data.companyName || 'النظام الإداري';
-                document.getElementById('topBarManagerName').textContent = data.managerName || 'المدير';
-                alert('تم حفظ الإعدادات بنجاح');
+                cacheSettingsLocally(data);
+                applySettingsToUi();
+                if (isOnline()) {
+                    await setDoc(doc(db, 'settings', 'business_info'), data);
+                    alert('تم حفظ الإعدادات.');
+                } else {
+                    queuePendingOperation({ type: 'save_settings', data });
+                    alert('تم حفظ الإعدادات محلياً وسيتم رفعها عند رجوع النت.');
+                }
             } catch (error) {
-                alert('حدث خطأ أثناء الحفظ: ' + error.message);
+                alert('تعذر الحفظ: ' + error.message);
+            } finally {
+                hideLoader();
             }
-            hideLoader();
         };
 
         async function loadAllClients() {
             try {
-                const querySnapshot = await getDocs(collection(db, 'clients'));
-                allClientsData = [];
-                querySnapshot.forEach((clientDoc) => {
-                    allClientsData.push({ id: clientDoc.id, ...clientDoc.data() });
-                });
-                renderDashboard();
-                renderClientsList();
-                populateClientNamesList();
+                if (isOnline()) {
+                    const querySnapshot = await getDocs(collection(db, 'clients'));
+                    allClientsData = [];
+                    querySnapshot.forEach((clientDoc) => {
+                        allClientsData.push({ id: clientDoc.id, ...clientDoc.data() });
+                    });
+                    cacheClientsLocally(allClientsData);
+                } else {
+                    allClientsData = readLocalJson(LOCAL_CLIENTS_KEY, []);
+                }
             } catch (error) {
                 console.error('Error loading clients:', error);
+                allClientsData = readLocalJson(LOCAL_CLIENTS_KEY, []);
             }
+            renderDashboard();
+            renderClientsList();
+            populateClientNamesList();
+            updateSyncStatusUI();
         }
 
         window.calcNewContract = () => {
@@ -1076,6 +1242,7 @@
             showLoader();
             try {
                 const newClient = {
+                    id: phone,
                     name,
                     phone,
                     guarantorName: document.getElementById('newGuarantorName').value.trim(),
@@ -1091,13 +1258,19 @@
                     transactionId: `TXN-${Date.now().toString().slice(-6)}`
                 };
 
-                await setDoc(doc(db, 'clients', phone), newClient);
-                alert('تمت إضافة الزبون بنجاح');
+                if (isOnline()) {
+                    await setDoc(doc(db, 'clients', phone), newClient);
+                    alert('تمت إضافة الزبون بنجاح');
+                } else {
+                    queuePendingOperation({ type: 'add_client', client: newClient });
+                    alert('تمت إضافة الزبون محلياً وسيتم رفعه عند رجوع النت.');
+                }
+
+                addClientToLocalCache(newClient);
                 document.querySelectorAll('#sec-manager input').forEach(inpt => {
                     if (inpt.type !== 'password') inpt.value = '';
                 });
                 calcNewContract();
-                await loadAllClients();
             } catch (e) {
                 console.error(e);
                 alert('خطأ في الحفظ: ' + e.message);
@@ -1161,29 +1334,45 @@
                     date: new Date().toLocaleString('ar-EG'),
                     timestamp: Date.now()
                 };
+                const updatedPayments = [...(client.payments || []), newPayment];
+                const updatedPaid = (parseFloat(client.cumulativePaid) || 0) + payAmount;
 
-                const updatedPaid = client.cumulativePaid + payAmount;
-                await updateDoc(doc(db, 'clients', client.phone), {
+                if (isOnline()) {
+                    await updateDoc(doc(db, 'clients', client.phone), {
+                        cumulativePaid: updatedPaid,
+                        nextDueDate: nextDue,
+                        payments: updatedPayments
+                    });
+                    alert('تم تسجيل الدفعة بنجاح');
+                } else {
+                    queuePendingOperation({
+                        type: 'add_payment',
+                        clientId: client.id || client.phone,
+                        updatedPaid,
+                        nextDueDate: nextDue,
+                        updatedPayments
+                    });
+                    alert('تم حفظ الدفعة محلياً وسيتم رفعها عند رجوع النت.');
+                }
+
+                const updatedClient = updateClientInLocalCache(client.id || client.phone, old => ({
+                    ...old,
                     cumulativePaid: updatedPaid,
                     nextDueDate: nextDue,
-                    payments: [...(client.payments || []), newPayment]
-                });
+                    payments: updatedPayments
+                })) || { ...client, cumulativePaid: updatedPaid, nextDueDate: nextDue, payments: updatedPayments };
 
-                client.cumulativePaid = updatedPaid;
-                client.nextDueDate = nextDue;
-                client.payments = [...(client.payments || []), newPayment];
-
-                alert('تم تسجيل الدفعة بنجاح');
+                currentActiveClientForPayment = updatedClient;
                 document.getElementById('payAmountInput').value = '';
                 calcPaymentDisplay();
                 document.getElementById('payNextDueDate').value = '';
                 loadClientForPayment();
-                await loadAllClients();
-                generateReceipt(client, payAmount);
+                generateReceipt(updatedClient, payAmount);
             } catch (e) {
                 alert('خطأ: ' + e.message);
+            } finally {
+                hideLoader();
             }
-            hideLoader();
         };
 
         function populateClientNamesList() {
@@ -1323,18 +1512,37 @@
                 const updatedPayments = [...(currentViewedClient.payments || [])];
                 updatedPayments.splice(paymentIndex, 1);
                 const updatedPaid = updatedPayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
-                await updateDoc(doc(db, 'clients', currentViewedClient.id), {
+
+                if (isOnline()) {
+                    await updateDoc(doc(db, 'clients', currentViewedClient.id), {
+                        payments: updatedPayments,
+                        cumulativePaid: updatedPaid
+                    });
+                    alert('تم حذف الدفعة.');
+                } else {
+                    queuePendingOperation({
+                        type: 'delete_payment',
+                        clientId: currentViewedClient.id,
+                        updatedPayments,
+                        updatedPaid
+                    });
+                    alert('تم حذف الدفعة محلياً وسيتم رفع التعديل عند رجوع النت.');
+                }
+
+                const refreshed = updateClientInLocalCache(currentViewedClient.id, old => ({
+                    ...old,
                     payments: updatedPayments,
                     cumulativePaid: updatedPaid
-                });
-                await loadAllClients();
-                const refreshed = allClientsData.find(c => c.id === currentViewedClient.id);
-                if (refreshed) viewClientDetailsById(refreshed.id);
-                alert('تم حذف الدفعة بنجاح.');
+                }));
+                if (refreshed) {
+                    currentViewedClient = refreshed;
+                    viewClientDetailsById(refreshed.id);
+                }
             } catch (error) {
                 alert('تعذر حذف الدفعة: ' + error.message);
+            } finally {
+                hideLoader();
             }
-            hideLoader();
         };
 
         window.deleteCurrentClient = async () => {
@@ -1342,15 +1550,21 @@
             if (!confirm(`هل تريد حذف الزبون ${currentViewedClient.name} نهائياً؟`)) return;
             showLoader();
             try {
-                await deleteDoc(doc(db, 'clients', currentViewedClient.id));
+                if (isOnline()) {
+                    await deleteDoc(doc(db, 'clients', currentViewedClient.id));
+                    alert('تم حذف الزبون.');
+                } else {
+                    queuePendingOperation({ type: 'delete_client', clientId: currentViewedClient.id });
+                    alert('تم حذف الزبون محلياً وسيتم رفع الحذف عند رجوع النت.');
+                }
+                removeClientFromLocalCache(currentViewedClient.id);
                 currentViewedClient = null;
                 document.getElementById('clientFullDetails').classList.add('hidden');
-                await loadAllClients();
-                alert('تم حذف الزبون بنجاح.');
             } catch (error) {
                 alert('تعذر حذف الزبون: ' + error.message);
+            } finally {
+                hideLoader();
             }
-            hideLoader();
         };
 
         window.closeClientDetails = () => {
@@ -1445,6 +1659,7 @@
                 loadAllClients();
             }
         };
+        updateSyncStatusUI();
     </script>
 </body>
 </html>
