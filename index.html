@@ -1654,17 +1654,17 @@ let currentCompanySettings = {};
         }
 
         window.calcNewContract = () => {
-            const purchasePrice = toKilo(document.getElementById('newPurchasePrice').value);
             const purchasePrice = toKilo(document.getElementById('newPurchasePrice')?.value || 0);
             const finalPrice = toKilo(document.getElementById('newFinalPrice').value);
             const monthly = toKilo(document.getElementById('newMonthlyInstallment').value);
-            const profit = Math.max(finalPrice - purchasePrice, 0);
-            setAmountText(purchasePrice, 'dispNewPurchasePrice', 'dispNewPurchasePriceWords');
-            setAmountText(finalPrice, 'dispNewFinalPrice', 'dispNewFinalPriceWords');
-            setAmountText(monthly, 'dispNewMonthly', 'dispNewMonthlyWords');
-            document.getElementById('summaryPurchase').textContent = formatMoney(purchasePrice);
+
+            const purchaseEl = document.getElementById('dispNewPurchasePrice');
+            if (purchaseEl) purchaseEl.textContent = `القيمة: ${formatMoney(purchasePrice)} دينار`;
+
+            document.getElementById('dispNewFinalPrice').textContent = `القيمة: ${formatMoney(finalPrice)} دينار`;
+            document.getElementById('dispNewMonthly').textContent = `القيمة: ${formatMoney(monthly)} دينار`;
+
             document.getElementById('summaryTotal').textContent = formatMoney(finalPrice);
-            document.getElementById('summaryProfit').textContent = formatMoney(profit);
             document.getElementById('summaryMonths').textContent = monthly > 0 ? Math.ceil(finalPrice / monthly) : 0;
         };
 
@@ -1863,17 +1863,15 @@ let currentCompanySettings = {};
             allClientsData.forEach(client => {
                 const finalPrice = Number(client.finalTotalPrice || 0);
                 const paid = Number(client.cumulativePaid || 0);
+                const purchasePrice = Number(client.purchasePrice || 0);
                 const remaining = Math.max(finalPrice - paid, 0);
 
                 totalReceivable += remaining;
-
-                const purchasePrice = Number(client.purchasePrice || 0);
                 if (purchasePrice > 0 && finalPrice > 0) {
                     totalProfit += Math.max(finalPrice - purchasePrice, 0);
                 }
 
-                if (remaining <= 0) return;
-                if (!client.nextDueDate) return;
+                if (remaining <= 0 || !client.nextDueDate) return;
 
                 const dueDate = new Date(client.nextDueDate);
                 if (isNaN(dueDate.getTime())) return;
@@ -1901,11 +1899,7 @@ let currentCompanySettings = {};
             const container = document.getElementById('notificationsContainer');
             if (!container) return;
 
-            if(alertsHtml === '') {
-                container.innerHTML = '<p style="color: #10b981;"><i class="fas fa-check-circle"></i> لا توجد استحقاقات قريبة أو متأخرة.</p>';
-            } else {
-                container.innerHTML = alertsHtml;
-            }
+            container.innerHTML = alertsHtml || '<p style="color: #10b981;"><i class="fas fa-check-circle"></i> لا توجد استحقاقات قريبة أو متأخرة.</p>';
         }
 
         function createAlertHTML(client, msgText, className) {
@@ -2067,8 +2061,8 @@ let currentCompanySettings = {};
 
         window.generateReceipt = (client, currentPaymentAmount = 0, receiptIdOverride = null, paymentDateOverride = null, receiptSnapshot = null) => {
             document.getElementById('sec-dashboard').classList.add('hidden');
-            document.getElementById('sec-newContract').classList.add('hidden');
-            document.getElementById('sec-newPayment').classList.add('hidden');
+            document.getElementById('sec-newContract')?.classList.add('hidden');
+            document.getElementById('sec-newPayment')?.classList.add('hidden');
             document.getElementById('sec-clients').classList.add('hidden');
             document.getElementById('sec-settings').classList.add('hidden');
 
@@ -2234,12 +2228,11 @@ let currentCompanySettings = {};
         };
 
         window.switchTab = (tabId) => {
-            Object.values(tabs).forEach(t => document.getElementById(t.el).classList.add('hidden'));
+            Object.values(tabs).forEach(t => document.getElementById(t.el)?.classList.add('hidden'));
             document.getElementById('receipt-section').classList.add('hidden');
             document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabs[tabId].el).classList.remove('hidden');
-            const navBtn = document.getElementById('nav-' + tabId);
-            if (navBtn) navBtn.classList.add('active');
+            document.getElementById(tabs[tabId].el)?.classList.remove('hidden');
+            document.getElementById('nav-' + tabId)?.classList.add('active');
             document.getElementById('currentTabTitle').innerHTML = `<i class="fas ${tabs[tabId].icon}"></i> ${tabs[tabId].title}`;
 
             if (tabId === 'dashboard' || tabId === 'clients' || tabId === 'receiptSearch' || tabId === 'newPayment') {
