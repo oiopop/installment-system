@@ -307,29 +307,302 @@
         }
         .alert-item.urgent { border-right-color: var(--danger); background: #fef2f2; }
         .alert-item.today { border-right-color: var(--warning); background: #fffbeb; }
-
+        /* ===== Sky Premium A4 Receipt ===== */
         #receipt-container {
-            border: 2px dashed var(--primary);
-            padding: 30px;
-            background: var(--white);
-            margin-top: 20px;
-            border-radius: 8px;
+            --sky: #0284c7;
+            --sky2: #38bdf8;
+            --sky3: #e0f2fe;
+            --ink: #0f172a;
+            --muted: #64748b;
+            background:
+                radial-gradient(circle at top right, rgba(56,189,248,0.18), transparent 26%),
+                radial-gradient(circle at bottom left, rgba(14,165,233,0.12), transparent 24%),
+                #ffffff;
+            color: var(--ink);
             max-width: 800px;
-            margin-left: auto; margin-right: auto;
+            margin: 20px auto 0;
+            padding: 34px;
+            border: 2px solid var(--sky2);
+            border-radius: 18px;
+            box-shadow: 0 18px 45px rgba(2,132,199,0.14);
+            position: relative;
+            overflow: hidden;
         }
 
-        .receipt-header {
+        #receipt-container::before,
+        #receipt-container::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 2px solid rgba(14,165,233,0.18);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        #receipt-container::before {
+            top: -75px;
+            right: -75px;
+        }
+
+        #receipt-container::after {
+            bottom: -85px;
+            left: -85px;
+        }
+
+        .receipt-premium-frame {
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(14,165,233,0.28);
+            border-radius: 15px;
+            padding: 24px;
+            background: rgba(255,255,255,0.82);
+        }
+
+        .receipt-top {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr 1fr;
+            gap: 18px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .receipt-logo-box {
+            min-height: 115px;
+            border: 1px solid rgba(14,165,233,0.35);
+            border-radius: 16px;
+            background: linear-gradient(180deg, #ffffff, #f0f9ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 20px;
-            margin-bottom: 20px;
+            color: var(--sky);
+            font-weight: 800;
+            padding: 10px;
         }
+
         .receipt-logo {
-            max-height: 80px;
-            margin-bottom: 10px;
+            max-width: 120px;
+            max-height: 95px;
+            object-fit: contain;
         }
-        
-        .hidden { display: none !important; }
+
+        .receipt-company {
+            text-align: center;
+        }
+
+        .receipt-company h2 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--sky);
+            font-weight: 800;
+        }
+
+        .receipt-company .subtitle {
+            margin: 6px 0 10px;
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        .receipt-contact {
+            display: grid;
+            gap: 5px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .receipt-title-box {
+            text-align: center;
+            border-radius: 18px;
+            padding: 18px 10px;
+            background: linear-gradient(135deg, var(--sky), var(--sky2));
+            color: white;
+            box-shadow: 0 12px 24px rgba(14,165,233,0.25);
+        }
+
+        .receipt-title-box h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .receipt-title-box .receipt-id {
+            margin-top: 10px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 999px;
+            padding: 6px 10px;
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        .receipt-mini-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .receipt-pill {
+            border: 1px solid rgba(14,165,233,0.28);
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #075985;
+        }
+
+        .receipt-info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .receipt-card {
+            border: 1px solid rgba(14,165,233,0.28);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.92);
+            overflow: hidden;
+        }
+
+        .receipt-card-title {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: white;
+            padding: 10px 16px;
+            font-weight: 800;
+            display: inline-flex;
+            border-bottom-left-radius: 14px;
+        }
+
+        .receipt-card-body {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .receipt-field {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .receipt-label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.82rem;
+            margin-bottom: 5px;
+        }
+
+        .receipt-value {
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .premium-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid rgba(14,165,233,0.25);
+            margin-top: 16px;
+        }
+
+        .premium-table th {
+            background: linear-gradient(135deg, #0369a1, #38bdf8);
+            color: white;
+            padding: 13px;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .premium-table td {
+            padding: 13px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+        }
+
+        .premium-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .row-paid-now {
+            background: #ecfeff;
+            color: #0e7490;
+        }
+
+        .row-remaining {
+            background: #f0f9ff;
+            color: #075985;
+        }
+
+        .receipt-words {
+            margin-top: 18px;
+            border: 1px solid rgba(14,165,233,0.28);
+            background: linear-gradient(90deg, #e0f2fe, #ffffff);
+            border-radius: 16px;
+            padding: 14px 18px;
+            text-align: center;
+            font-weight: 800;
+            color: #075985;
+        }
+
+        .receipt-note-box {
+            margin-top: 16px;
+            border: 1px dashed rgba(14,165,233,0.45);
+            border-radius: 16px;
+            padding: 14px;
+            min-height: 54px;
+            color: var(--muted);
+            background: rgba(240,249,255,0.55);
+        }
+
+        .receipt-sign-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 30px;
+            align-items: center;
+        }
+
+        .receipt-sign {
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .receipt-sign-line {
+            width: 180px;
+            border-top: 2px solid #94a3b8;
+            margin: 18px auto 0;
+        }
+
+        .receipt-stamp {
+            width: 130px;
+            height: 130px;
+            border: 2px dashed var(--sky2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            color: var(--sky);
+            font-weight: 800;
+            background: rgba(224,242,254,0.45);
+        }
+
+        .receipt-footer {
+            margin-top: 28px;
+            text-align: center;
+            color: var(--sky);
+            font-weight: 800;
+            border-top: 1px solid rgba(14,165,233,0.25);
+            padding-top: 14px;
+        }
+.hidden { display: none !important; }
 
         #loader {
             position: fixed; top:0; left:0; width:100%; height:100%;
@@ -343,10 +616,89 @@
             body * { visibility: hidden; }
             #receipt-section, #receipt-section * { visibility: visible; }
             #receipt-section { position: absolute; left: 0; top: 0; width: 100%; }
-            #receipt-container { border: none; box-shadow: none; width: 100%; max-width: 100%; padding: 0; }
+            #receipt-container { border: none; box-shadow: none; width: 100%; max-width: 100%; padding: 0; margin: 0; border-radius: 0; }
             .no-print { display: none !important; }
         }
-    </style>
+    
+        /* Force colors/backgrounds to appear in print/PDF */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+
+        @media print {
+            html, body {
+                background: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #receipt-container,
+            #receipt-container *,
+            .receipt-title-box,
+            .receipt-card-title,
+            .premium-table th,
+            .row-paid-now,
+            .row-remaining,
+            .receipt-words,
+            .receipt-pill,
+            .receipt-logo-box,
+            .receipt-note-box,
+            .receipt-stamp {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .receipt-title-box {
+                background: #0ea5e9 !important;
+                color: #ffffff !important;
+            }
+
+            .receipt-card-title {
+                background: #0ea5e9 !important;
+                color: #ffffff !important;
+            }
+
+            .premium-table th {
+                background: #0ea5e9 !important;
+                color: #ffffff !important;
+            }
+
+            .row-paid-now {
+                background: #ecfeff !important;
+                color: #0e7490 !important;
+            }
+
+            .row-remaining {
+                background: #f0f9ff !important;
+                color: #075985 !important;
+            }
+
+            .receipt-words {
+                background: #e0f2fe !important;
+                color: #075985 !important;
+            }
+
+            .receipt-pill,
+            .receipt-logo-box,
+            .receipt-note-box {
+                background: #f0f9ff !important;
+            }
+
+            #receipt-container::before,
+            #receipt-container::after {
+                display: none !important;
+            }
+        }
+
+</style>
 </head>
 <body>
 
@@ -374,11 +726,17 @@
             </div>
             <ul class="nav-links">
                 <li><button onclick="switchTab('dashboard')" id="nav-dashboard" class="active"><i class="fas fa-chart-line"></i> لوحة الإشعارات</button></li>
-                <li><button onclick="switchTab('manager')" id="nav-manager"><i class="fas fa-file-contract"></i> عقد / قسط جديد</button></li>
+                <li><button onclick="switchTab('newContract')" id="nav-newContract"><i class="fas fa-file-contract"></i> إضافة عقد</button></li>
+                <li><button onclick="switchTab('newPayment')" id="nav-newPayment"><i class="fas fa-money-bill-wave"></i> إضافة قسط</button></li>
                 <li><button onclick="switchTab('clients')" id="nav-clients"><i class="fas fa-users"></i> بحث والعملاء</button></li>
+                <li><button onclick="switchTab('receiptSearch')" id="nav-receiptSearch"><i class="fas fa-receipt"></i> بحث الإيصال</button></li>
                 <li><button onclick="switchTab('settings')" id="nav-settings"><i class="fas fa-cogs"></i> إعدادات الشركة</button></li>
                 <li style="margin-top: auto;"><button onclick="handleLogout()" style="color: #fca5a5;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button></li>
             </ul>
+            <div style="padding:12px 14px; font-size:0.78rem; color:rgba(255,255,255,0.75); text-align:center; border-top:1px solid rgba(255,255,255,0.12); line-height:1.6;">
+                تم تطوير هذا العمل من قبل<br>
+                <strong>أمير كاظم الشبلاوي 2026</strong>
+            </div>
         </aside>
 
         <main class="main-content">
@@ -425,6 +783,20 @@
                                 <div style="font-size: 1.5rem; font-weight: bold; color: var(--warning);" id="dashDueToday">0</div>
                             </div>
                         </div>
+                        <div class="stat-card success">
+                            <i class="fas fa-wallet stat-icon" style="color: var(--success);"></i>
+                            <div>
+                                <div style="font-size: 0.9rem; color: var(--success);">إجمالي المطلوبات</div>
+                                <div style="font-size: 1.25rem; font-weight: bold; color: var(--success);" id="dashTotalReceivable">0 د.ع</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-chart-pie stat-icon" style="color: var(--primary);"></i>
+                            <div>
+                                <div style="font-size: 0.9rem; color: var(--primary);">الهامش الربحي</div>
+                                <div style="font-size: 1.25rem; font-weight: bold; color: var(--primary);" id="dashTotalProfit">0 د.ع</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="card">
@@ -435,7 +807,7 @@
                     </div>
                 </section>
 
-                <section id="sec-manager" class="hidden">
+                <section id="sec-newContract" class="hidden">
                     <div class="card">
                         <h3 class="section-title">تسجيل عقد تقسيط جديد</h3>
                         <div class="form-grid">
@@ -502,6 +874,9 @@
                         </div>
                     </div>
 
+                    </section>
+
+                <section id="sec-newPayment" class="hidden">
                     <div class="card">
                         <h3 class="section-title">تسجيل دفعة لعميل حالي</h3>
                         <div class="form-group" style="max-width: 400px;">
@@ -528,6 +903,10 @@
                                     <small class="hint-text" id="dispPayAmountWords">صفر دينار فقط لا غير</small>
                                 </div>
                                 <div class="form-group">
+                                    <label>تاريخ التسديد</label>
+                                    <input type="date" id="payPaymentDate">
+                                </div>
+                                <div class="form-group">
                                     <label>تاريخ الاستحقاق القادم (بعد هذه الدفعة)</label>
                                     <input type="date" id="payNextDueDate">
                                 </div>
@@ -537,14 +916,18 @@
                             </div>
                         </div>
                     </div>
+                
                 </section>
 
                 <section id="sec-clients" class="hidden">
                     <div class="card">
-                        <h3 class="section-title">البحث في السجلات</h3>
-                        <input type="text" id="generalSearch" placeholder="البحث باسم الزبون أو المادة..." oninput="renderClientsList()">
-                        
-                        <div style="overflow-x: auto; margin-top: 20px;">
+                        <h3 class="section-title">بحث العملاء</h3>
+                        <input type="text" id="generalSearch" placeholder="اكتب اسم الزبون أو المادة..." oninput="renderClientsList()">
+                    </div>
+
+                    <div class="card">
+                        <h3 class="section-title">قائمة العملاء</h3>
+                        <div style="overflow-x: auto; margin-top: 10px;">
                             <table id="clientsTable">
                                 <thead>
                                     <tr>
@@ -599,6 +982,21 @@
                             </thead>
                             <tbody id="historyTableBody"></tbody>
                         </table>
+                    </div>
+                </section>
+
+
+                <section id="sec-receiptSearch" class="hidden">
+                    <div class="card">
+                        <h3 class="section-title"><i class="fas fa-receipt"></i> البحث عن الإيصال</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>رقم الإيصال</label>
+                                <input type="text" id="receiptSearchInput" placeholder="مثال: TXN-701425 أو 701425" oninput="searchReceiptByNumber()">
+                                <span class="hint-text">اكتب رقم الإيصال كامل حتى يطلع الوصل المطلوب فقط.</span>
+                            </div>
+                        </div>
+                        <div id="receiptSearchResults" style="margin-top: 15px;"></div>
                     </div>
                 </section>
 
@@ -682,53 +1080,102 @@
                     </div>
                     
                     <div id="receipt-container">
-                        <div class="receipt-header">
-                            <img id="recLogo" class="receipt-logo hidden" src="" alt="Logo">
-                            <h2 id="recCompanyName" style="margin: 0; color: var(--primary);">اسم الشركة</h2>
-                            <p style="margin: 5px 0 0 0; color: #555;">بإدارة: <span id="recManager">---</span> | هاتف: <span id="recPhone">---</span></p>
-                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #777;" id="recAddress">العنوان</p>
-                            <hr style="margin-top: 15px; border-top: 1px dashed #ccc;">
-                            <h3 style="margin: 10px 0 0 0;">سند استلام / كشف حساب</h3>
-                        </div>
+                        <div class="receipt-premium-frame">
+                            <div class="receipt-top">
+                                <div class="receipt-logo-box">
+                                    <img id="recLogo" class="receipt-logo hidden" src="" alt="Logo">
+                                    <span id="recLogoText">شعار الشركة</span>
+                                </div>
 
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold;">
-                            <div>التاريخ: <span id="recDate"></span></div>
-                            <div>رقم السجل: <span id="recTxId"></span></div>
-                        </div>
+                                <div class="receipt-company">
+                                    <h2 id="recCompanyName">اسم الشركة</h2>
+                                    <div class="subtitle">نظام إدارة الأقساط</div>
+                                    <div class="receipt-contact">
+                                        <div>بإدارة: <span id="recManager">---</span></div>
+                                        <div>الهاتف: <span id="recPhone">---</span></div>
+                                        <div>العنوان: <span id="recAddress">---</span></div>
+                                    </div>
+                                </div>
 
-                        <div style="background: #f9fafb; padding: 15px; border-radius: 6px; border: 1px solid #eee; margin-bottom: 20px;">
-                            <p><strong>اسم العميل:</strong> <span id="recClientName"></span></p>
-                            <p><strong>رقم الهاتف:</strong> <span id="recClientPhone"></span></p>
-                            <p><strong>السلعة / المادة:</strong> <span id="recItem"></span></p>
-                        </div>
+                                <div class="receipt-title-box">
+                                    <h1>إيصال دفع</h1>
+                                    <div class="receipt-id">رقم الإيصال: <span id="recTxId">---</span></div>
+                                </div>
+                            </div>
 
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>التفاصيل</th>
-                                    <th>المبلغ (IQD)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                                                <tr><td>السعر بعد القسط / إجمالي مبلغ التقسيط النهائي</td><td id="recTotalDebt">0</td></tr>
-                                <tr><td>القسط الشهري المتفق عليه</td><td id="recMonthly">0</td></tr>
-                                <tr><td>إجمالي ما تم تسديده</td><td id="recPaid">0</td></tr>
-                                <tr style="background-color: #fef2f2;">
-                                    <td style="color: var(--danger); font-weight: bold;">المتبقي الكلي (بذمة العميل)</td>
-                                    <td style="color: var(--danger); font-weight: bold;" id="recRemaining">0</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                        <div id="recCurrentPaymentRow" class="hidden" style="margin-top: 20px; padding: 15px; background: #ecfdf5; border: 1px solid #10b981; border-radius: 6px; text-align: center;">
-                            <h4 style="margin: 0; color: #059669;">الدفعة المستلمة حالياً: <span id="recCurrentPaymentAmount">0</span> دينار عراقي</h4>
-                            <div style="margin-top:8px; color:#065f46;" id="recCurrentPaymentWords">صفر دينار فقط لا غير</div>
-                        </div>
+                            <div class="receipt-mini-row">
+                                <div class="receipt-pill">تاريخ الإصدار: <span id="recDate">---</span></div>
+                                <div class="receipt-pill">تاريخ الاستحقاق القادم: <span id="recNextDue">---</span></div>
+                            </div>
 
-                        <div style="text-align: center; margin-top: 30px; font-size: 0.9rem; color: #666; border-top: 1px solid #ccc; padding-top: 10px;">
-                            <p id="recAmountsWords" style="font-weight:bold; color:#374151;"></p>
-                            <p id="recNote">ملاحظة أسفل الإيصال</p>
-                            <p>تاريخ الاستحقاق القادم: <span id="recNextDue" style="font-weight:bold;">---</span></p>
+                            <div class="receipt-info-grid">
+                                <div class="receipt-card">
+                                    <div class="receipt-card-title">تفاصيل الزبون</div>
+                                    <div class="receipt-card-body">
+                                        <div class="receipt-field">
+                                            <span class="receipt-label">اسم الزبون</span>
+                                            <span class="receipt-value" id="recClientName">---</span>
+                                        </div>
+                                        <div class="receipt-field">
+                                            <span class="receipt-label">رقم الهاتف</span>
+                                            <span class="receipt-value" id="recClientPhone">---</span>
+                                        </div>
+                                        <div class="receipt-field">
+                                            <span class="receipt-label">المادة</span>
+                                            <span class="receipt-value" id="recItem">---</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>التفاصيل</th>
+                                        <th>القيمة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>المبلغ الكلي</td>
+                                        <td id="recTotalDebt">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>القسط الشهري</td>
+                                        <td id="recMonthly">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>إجمالي المدفوع سابقاً</td>
+                                        <td id="recPaid">0</td>
+                                    </tr>
+                                    <tr class="row-paid-now" id="recCurrentPaymentRow">
+                                        <td>المبلغ المدفوع الآن</td>
+                                        <td>
+                                            <span id="recCurrentPaymentAmount">0</span>
+                                            <div style="font-size:0.82rem; margin-top:5px;">تاريخ التسديد: <span id="recPaymentDate">---</span></div>
+                                            <div style="font-size:0.82rem; margin-top:4px;" id="recCurrentPaymentWords">صفر دينار فقط لا غير</div>
+                                        </td>
+                                    </tr>
+                                    <tr class="row-remaining">
+                                        <td>المبلغ المتبقي</td>
+                                        <td id="recRemaining">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="receipt-words" id="recAmountsWords">المبلغ كتابة</div>
+
+                            <div class="receipt-note-box" id="recNote">شكراً لتعاملكم معنا.</div>
+
+                            <div class="receipt-sign-row">
+                                <div class="receipt-sign">
+                                    توقيع المسؤول
+                                    <div class="receipt-sign-line"></div>
+                                </div>
+                                <div class="receipt-stamp">ختم الشركة</div>
+                            </div>
+
+                            <div class="receipt-footer">شكراً لتعاملكم معنا</div>
                         </div>
                     </div>
                 </section>
@@ -1208,6 +1655,7 @@ let currentCompanySettings = {};
 
         window.calcNewContract = () => {
             const purchasePrice = toKilo(document.getElementById('newPurchasePrice').value);
+            const purchasePrice = toKilo(document.getElementById('newPurchasePrice')?.value || 0);
             const finalPrice = toKilo(document.getElementById('newFinalPrice').value);
             const monthly = toKilo(document.getElementById('newMonthlyInstallment').value);
             const profit = Math.max(finalPrice - purchasePrice, 0);
@@ -1248,6 +1696,7 @@ let currentCompanySettings = {};
                     guarantorName: document.getElementById('newGuarantorName').value.trim(),
                     guarantorPhone: document.getElementById('newGuarantorPhone').value.trim(),
                     itemType: item,
+                purchasePrice: purchasePrice,
                     purchasePrice,
                     finalTotalPrice: finalPrice,
                     monthlyInstallment: monthly,
@@ -1294,6 +1743,10 @@ let currentCompanySettings = {};
                 const remaining = client.finalTotalPrice - client.cumulativePaid;
                 document.getElementById('payRemaining').textContent = formatMoney(remaining);
                 document.getElementById('payMonthly').textContent = formatMoney(client.monthlyInstallment);
+                const paymentDateInput = document.getElementById('payPaymentDate');
+                if (paymentDateInput && !paymentDateInput.value) {
+                    paymentDateInput.value = new Date().toISOString().slice(0, 10);
+                }
                 area.classList.remove('hidden');
             } else {
                 currentActiveClientForPayment = null;
@@ -1310,10 +1763,15 @@ let currentCompanySettings = {};
             if (!currentActiveClientForPayment) return;
             const client = currentActiveClientForPayment;
             const payAmount = toKilo(document.getElementById('payAmountInput').value);
+            const paymentDate = document.getElementById('payPaymentDate').value;
             const nextDue = document.getElementById('payNextDueDate').value;
 
             if (payAmount <= 0) {
                 alert('أدخل مبلغ صحيح');
+                return;
+            }
+            if (!paymentDate) {
+                alert('يرجى تحديد تاريخ التسديد');
                 return;
             }
             if (!nextDue) {
@@ -1331,7 +1789,7 @@ let currentCompanySettings = {};
             try {
                 const newPayment = {
                     amount: payAmount,
-                    date: new Date().toLocaleString('ar-EG'),
+                    date: paymentDate,
                     timestamp: Date.now()
                 };
                 const updatedPayments = [...(client.payments || []), newPayment];
@@ -1365,6 +1823,7 @@ let currentCompanySettings = {};
                 currentActiveClientForPayment = updatedClient;
                 document.getElementById('payAmountInput').value = '';
                 calcPaymentDisplay();
+                document.getElementById('payPaymentDate').value = '';
                 document.getElementById('payNextDueDate').value = '';
                 loadClientForPayment();
                 generateReceipt(updatedClient, payAmount);
@@ -1384,39 +1843,65 @@ let currentCompanySettings = {};
         }
 
         function renderDashboard() {
-            document.getElementById('dashTotalClients').textContent = allClientsData.length;
+            const totalClientsEl = document.getElementById('dashTotalClients');
+            const overdueEl = document.getElementById('dashOverdue');
+            const dueTodayEl = document.getElementById('dashDueToday');
+            const totalReceivableEl = document.getElementById('dashTotalReceivable');
+            const totalProfitEl = document.getElementById('dashTotalProfit');
+
+            if (totalClientsEl) totalClientsEl.textContent = allClientsData.length;
+
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setHours(0,0,0,0);
 
             let overdueCount = 0;
             let dueTodayCount = 0;
+            let totalReceivable = 0;
+            let totalProfit = 0;
             let alertsHtml = '';
 
             allClientsData.forEach(client => {
-                const remaining = client.finalTotalPrice - client.cumulativePaid;
+                const finalPrice = Number(client.finalTotalPrice || 0);
+                const paid = Number(client.cumulativePaid || 0);
+                const remaining = Math.max(finalPrice - paid, 0);
+
+                totalReceivable += remaining;
+
+                const purchasePrice = Number(client.purchasePrice || 0);
+                if (purchasePrice > 0 && finalPrice > 0) {
+                    totalProfit += Math.max(finalPrice - purchasePrice, 0);
+                }
+
                 if (remaining <= 0) return;
+                if (!client.nextDueDate) return;
 
                 const dueDate = new Date(client.nextDueDate);
-                dueDate.setHours(0, 0, 0, 0);
+                if (isNaN(dueDate.getTime())) return;
+                dueDate.setHours(0,0,0,0);
+
                 const diffTime = dueDate - today;
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                 if (diffDays < 0) {
                     overdueCount++;
-                    alertsHtml += createAlertHTML(client, 'متأخر عن الدفع', 'urgent');
+                    alertsHtml += createAlertHTML(client, 'متأخر عن الدفع', diffDays, 'urgent');
                 } else if (diffDays === 0) {
                     dueTodayCount++;
-                    alertsHtml += createAlertHTML(client, 'استحقاق اليوم', 'today');
+                    alertsHtml += createAlertHTML(client, 'استحقاق اليوم', diffDays, 'today');
                 } else if (diffDays > 0 && diffDays <= 3) {
-                    alertsHtml += createAlertHTML(client, `استحقاق بعد ${diffDays} أيام`, '');
+                    alertsHtml += createAlertHTML(client, `استحقاق بعد ${diffDays} أيام`, diffDays, '');
                 }
             });
 
-            document.getElementById('dashOverdue').textContent = overdueCount;
-            document.getElementById('dashDueToday').textContent = dueTodayCount;
+            if (overdueEl) overdueEl.textContent = overdueCount;
+            if (dueTodayEl) dueTodayEl.textContent = dueTodayCount;
+            if (totalReceivableEl) totalReceivableEl.textContent = formatMoney(totalReceivable) + ' د.ع';
+            if (totalProfitEl) totalProfitEl.textContent = formatMoney(totalProfit) + ' د.ع';
 
             const container = document.getElementById('notificationsContainer');
-            if (alertsHtml === '') {
+            if (!container) return;
+
+            if(alertsHtml === '') {
                 container.innerHTML = '<p style="color: #10b981;"><i class="fas fa-check-circle"></i> لا توجد استحقاقات قريبة أو متأخرة.</p>';
             } else {
                 container.innerHTML = alertsHtml;
@@ -1580,9 +2065,10 @@ let currentCompanySettings = {};
             window.open(`https://wa.me/${phoneInt}?text=${waMsg}`, '_blank');
         };
 
-        window.generateReceipt = (client, currentPaymentAmount = 0) => {
+        window.generateReceipt = (client, currentPaymentAmount = 0, receiptIdOverride = null, paymentDateOverride = null, receiptSnapshot = null) => {
             document.getElementById('sec-dashboard').classList.add('hidden');
-            document.getElementById('sec-manager').classList.add('hidden');
+            document.getElementById('sec-newContract').classList.add('hidden');
+            document.getElementById('sec-newPayment').classList.add('hidden');
             document.getElementById('sec-clients').classList.add('hidden');
             document.getElementById('sec-settings').classList.add('hidden');
 
@@ -1592,8 +2078,12 @@ let currentCompanySettings = {};
             if (currentCompanySettings.logoUrl) {
                 document.getElementById('recLogo').src = currentCompanySettings.logoUrl;
                 document.getElementById('recLogo').classList.remove('hidden');
+                const logoText = document.getElementById('recLogoText');
+                if (logoText) logoText.classList.add('hidden');
             } else {
                 document.getElementById('recLogo').classList.add('hidden');
+                const logoText = document.getElementById('recLogoText');
+                if (logoText) logoText.classList.remove('hidden');
             }
             document.getElementById('recCompanyName').textContent = currentCompanySettings.companyName || 'اسم الشركة';
             document.getElementById('recManager').textContent = currentCompanySettings.managerName || 'المدير';
@@ -1602,27 +2092,34 @@ let currentCompanySettings = {};
             document.getElementById('recNote').textContent = currentCompanySettings.receiptNote || 'شكراً لتعاملكم معنا.';
 
             document.getElementById('recDate').textContent = new Date().toLocaleDateString('ar-EG');
-            document.getElementById('recTxId').textContent = client.transactionId;
+            document.getElementById('recTxId').textContent = receiptIdOverride || client.transactionId || '---';
             document.getElementById('recClientName').textContent = client.name;
             document.getElementById('recClientPhone').innerHTML = `<span class="ltr-number">${client.phone}</span>`;
             document.getElementById('recItem').textContent = client.itemType;
 
-            const remaining = client.finalTotalPrice - client.cumulativePaid;
-            document.getElementById('recTotalDebt').textContent = formatMoney(client.finalTotalPrice);
-            document.getElementById('recMonthly').textContent = formatMoney(client.monthlyInstallment);
-            document.getElementById('recPaid').textContent = formatMoney(client.cumulativePaid);
+            const totalForReceipt = receiptSnapshot?.finalTotalPrice ?? client.finalTotalPrice;
+            const monthlyForReceipt = receiptSnapshot?.monthlyInstallment ?? client.monthlyInstallment;
+            const paidForReceipt = receiptSnapshot?.cumulativePaidAfter ?? client.cumulativePaid;
+            const remaining = receiptSnapshot?.remainingAfter ?? (client.finalTotalPrice - client.cumulativePaid);
+            document.getElementById('recTotalDebt').textContent = formatMoney(totalForReceipt);
+            document.getElementById('recMonthly').textContent = formatMoney(monthlyForReceipt);
+            document.getElementById('recPaid').textContent = formatMoney(paidForReceipt);
             document.getElementById('recRemaining').textContent = formatMoney(remaining);
             document.getElementById('recNextDue').textContent = client.nextDueDate || 'منتهي';
 
             if (currentPaymentAmount > 0) {
                 document.getElementById('recCurrentPaymentRow').classList.remove('hidden');
                 document.getElementById('recCurrentPaymentAmount').textContent = formatMoney(currentPaymentAmount);
+                const recPayDateEl = document.getElementById('recPaymentDate');
+                if (recPayDateEl) recPayDateEl.textContent = paymentDateOverride || new Date().toLocaleDateString('ar-EG');
                 document.getElementById('recCurrentPaymentWords').textContent = numberToArabicWords(currentPaymentAmount);
+                const lastPayment = (client.payments || [])[client.payments.length - 1];
+                document.getElementById('recPaymentDate').textContent = lastPayment?.date || new Date().toISOString().slice(0, 10);
             } else {
                 document.getElementById('recCurrentPaymentRow').classList.add('hidden');
             }
 
-            document.getElementById('recAmountsWords').textContent = `السعر بعد القسط: ${numberToArabicWords(client.finalTotalPrice)} | المتبقي: ${numberToArabicWords(remaining)}`;
+            document.getElementById('recAmountsWords').textContent = `المبلغ الكلي: ${numberToArabicWords(client.finalTotalPrice)} | المتبقي: ${numberToArabicWords(remaining)}`;
 
             const phoneInt = convertToInternationalPhone(client.phone);
             const msg = encodeURIComponent(`*${currentCompanySettings.companyName || 'الشركة'}*\nمرحباً ${client.name}،\nتم إصدار كشف حساب / إيصال.\nالمسدد الكلي: ${formatMoney(client.cumulativePaid)} IQD\nالمتبقي بذمتكم: ${formatMoney(remaining)} IQD\nتاريخ الاستحقاق القادم: ${client.nextDueDate}\nشكراً لكم.`);
@@ -1637,13 +2134,102 @@ let currentCompanySettings = {};
 
         window.closeReceipt = () => {
             document.getElementById('receipt-section').classList.add('hidden');
-            switchTab('manager');
+            switchTab('newPayment');
         };
+
+
+        // ==========================================
+        // البحث عن الإيصال برقم الإيصال
+        // ==========================================
+        window.searchReceiptByNumber = () => {
+            const input = document.getElementById('receiptSearchInput');
+            const results = document.getElementById('receiptSearchResults');
+            if (!input || !results) return;
+
+            const q = input.value.trim().toLowerCase();
+            results.innerHTML = '';
+
+            if (!q) {
+                results.innerHTML = '<p style="color:#666;">اكتب رقم الإيصال للبحث.</p>';
+                return;
+            }
+
+            const matches = [];
+
+            allClientsData.forEach(client => {
+                const baseReceipt = client.transactionId || '';
+                const cleanBaseReceipt = String(baseReceipt).toLowerCase().replace(/[^a-z0-9]/g, '');
+                const cleanQBase = q.replace(/[^a-z0-9]/g, '');
+                if (cleanBaseReceipt === cleanQBase || baseReceipt.toLowerCase() === q) {
+                    matches.push({
+                        client,
+                        type: 'عقد',
+                        receiptId: baseReceipt,
+                        amount: 0,
+                        date: client.createdAt ? new Date(client.createdAt).toLocaleDateString('ar-EG') : '---'
+                    });
+                }
+
+                if (client.payments && client.payments.length) {
+                    client.payments.forEach((p, index) => {
+                        const rid = p.receiptId || `${baseReceipt || 'TXN'}-P${index + 1}`;
+                        const cleanRid = String(rid).toLowerCase().replace(/[^a-z0-9]/g, '');
+                        const cleanQ = q.replace(/[^a-z0-9]/g, '');
+                        if (cleanRid === cleanQ || rid.toLowerCase() === q) {
+                            matches.push({
+                                client,
+                                type: 'دفعة',
+                                receiptId: rid,
+                                amount: p.amount || 0,
+                                date: p.date || '---',
+                                snapshot: {
+                                    cumulativePaidAfter: p.cumulativePaidAfter,
+                                    remainingAfter: p.remainingAfter,
+                                    finalTotalPrice: p.finalTotalPrice,
+                                    monthlyInstallment: p.monthlyInstallment
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            if (!matches.length) {
+                results.innerHTML = '<div class="alert-item urgent"><strong>لا يوجد إيصال بهذا الرقم.</strong></div>';
+                return;
+            }
+
+            window.receiptSearchMatches = matches;
+
+            results.innerHTML = matches.map((m, i) => `
+                <div class="alert-item">
+                    <div>
+                        <strong>${m.receiptId}</strong> - ${m.type}<br>
+                        <span style="font-size:0.9rem;color:#666;">
+                            الزبون: ${m.client.name} | الهاتف: ${m.client.phone} | التاريخ: ${m.date}
+                            ${m.amount ? ` | المبلغ: ${formatMoney(m.amount)} د.ع` : ''}
+                        </span>
+                    </div>
+                    <button class="btn btn-primary" onclick="openReceiptSearchResult(${i})">
+                        <i class="fas fa-eye"></i> فتح
+                    </button>
+                </div>
+            `).join('');
+        };
+
+        window.openReceiptSearchResult = (index) => {
+            const match = window.receiptSearchMatches && window.receiptSearchMatches[index];
+            if (!match) return;
+            generateReceipt(match.client, match.amount || 0, match.receiptId, match.date, match.snapshot || null);
+        };
+
 
         const tabs = {
             dashboard: { el: 'sec-dashboard', title: 'لوحة الإشعارات', icon: 'fa-chart-line' },
-            manager: { el: 'sec-manager', title: 'العقود والدفعات', icon: 'fa-file-contract' },
+            newContract: { el: 'sec-newContract', title: 'إضافة عقد', icon: 'fa-file-contract' },
+            newPayment: { el: 'sec-newPayment', title: 'إضافة قسط', icon: 'fa-money-bill-wave' },
             clients: { el: 'sec-clients', title: 'إدارة العملاء', icon: 'fa-users' },
+            receiptSearch: { el: 'sec-receiptSearch', title: 'بحث الإيصال', icon: 'fa-receipt' },
             settings: { el: 'sec-settings', title: 'إعدادات النظام', icon: 'fa-cogs' }
         };
 
@@ -1652,10 +2238,11 @@ let currentCompanySettings = {};
             document.getElementById('receipt-section').classList.add('hidden');
             document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
             document.getElementById(tabs[tabId].el).classList.remove('hidden');
-            document.getElementById('nav-' + tabId).classList.add('active');
+            const navBtn = document.getElementById('nav-' + tabId);
+            if (navBtn) navBtn.classList.add('active');
             document.getElementById('currentTabTitle').innerHTML = `<i class="fas ${tabs[tabId].icon}"></i> ${tabs[tabId].title}`;
 
-            if (tabId === 'dashboard' || tabId === 'clients') {
+            if (tabId === 'dashboard' || tabId === 'clients' || tabId === 'receiptSearch' || tabId === 'newPayment') {
                 loadAllClients();
             }
         };
