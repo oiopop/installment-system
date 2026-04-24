@@ -1,2514 +1,367 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الأقساط الاحترافي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #3b82f6;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #1f2937;
-            --light: #f3f4f6;
-            --white: #ffffff;
-            --border: #e5e7eb;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        body {
-            margin: 0;
-            background-color: #f8fafc;
-            color: var(--dark);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        #login-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .login-box {
-            background: var(--white);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .login-box h2 {
-            margin-top: 0;
-            color: var(--primary);
-            font-weight: 800;
-        }
-
-        #app-screen {
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
-
-        .sidebar {
-            width: 260px;
-            background-color: var(--primary);
-            color: var(--white);
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .sidebar-header h2 {
-            margin: 0;
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            flex: 1;
-        }
-
-        .nav-links li {
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .nav-links button {
-            width: 100%;
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.8);
-            padding: 15px 20px;
-            text-align: right;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-links button:hover, .nav-links button.active {
-            background-color: rgba(255,255,255,0.1);
-            color: var(--white);
-            border-right: 4px solid var(--secondary);
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .top-bar {
-            background: var(--white);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .content-area {
-            padding: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .card {
-            background: var(--white);
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-        }
-
-        h3.section-title {
-            margin-top: 0;
-            color: var(--primary);
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #4b5563;
-            font-size: 0.9rem;
-        }
-
-        .ltr-number {
-            direction: ltr;
-            unicode-bidi: embed;
-            display: inline-block;
-            text-align: left;
-        }
-
-        input[type="text"], input[type="number"], input[type="tel"], input[type="date"], input[type="password"], input[type="email"], select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-            background: #fdfdfd;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .hint-text {
-            display: block;
-            font-size: 0.8rem;
-            color: #6b7280;
-            margin-top: 5px;
-        }
-
-        .amount-display {
-            background-color: #eef2ff;
-            color: var(--primary);
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            margin-top: 5px;
-            font-size: 0.9rem;
-        }
-
-        .ltr-number {
-            direction: ltr;
-            unicode-bidi: embed;
-            display: inline-block;
-            text-align: left;
-        }
-
-        button.btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary { background: var(--primary); color: var(--white); }
-        .btn-primary:hover { background: #152c6b; }
-        .btn-success { background: var(--success); color: var(--white); }
-        .btn-success:hover { background: #059669; }
-        .btn-danger { background: var(--danger); color: var(--white); }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-whatsapp { background: #25D366; color: var(--white); }
-        .btn-whatsapp:hover { background: #1ebd5a; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: right;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background-color: var(--light);
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: var(--white);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            border-right: 5px solid var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .stat-card.danger { border-color: var(--danger); }
-        .stat-card.warning { border-color: var(--warning); }
-        .stat-card.success { border-color: var(--success); }
-
-        .stat-icon {
-            font-size: 2rem;
-            color: #9ca3af;
-        }
-
-        .alert-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-right: 4px solid var(--primary);
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .alert-item.urgent { border-right-color: var(--danger); background: #fef2f2; }
-        .alert-item.today { border-right-color: var(--warning); background: #fffbeb; }
-        /* ===== Sky Premium A4 Receipt ===== */
-        #receipt-container {
-            --sky: #0284c7;
-            --sky2: #38bdf8;
-            --sky3: #e0f2fe;
-            --ink: #0f172a;
-            --muted: #64748b;
-            background:
-                radial-gradient(circle at top right, rgba(56,189,248,0.18), transparent 26%),
-                radial-gradient(circle at bottom left, rgba(14,165,233,0.12), transparent 24%),
-                #ffffff;
-            color: var(--ink);
-            max-width: 800px;
-            margin: 20px auto 0;
-            padding: 34px;
-            border: 2px solid var(--sky2);
-            border-radius: 18px;
-            box-shadow: 0 18px 45px rgba(2,132,199,0.14);
-            position: relative;
-            overflow: hidden;
-        }
-
-        #receipt-container::before,
-        #receipt-container::after {
-            content: "";
-            position: absolute;
-            width: 180px;
-            height: 180px;
-            border: 2px solid rgba(14,165,233,0.18);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        #receipt-container::before {
-            top: -75px;
-            right: -75px;
-        }
-
-        #receipt-container::after {
-            bottom: -85px;
-            left: -85px;
-        }
-
-        .receipt-premium-frame {
-            position: relative;
-            z-index: 1;
-            border: 1px solid rgba(14,165,233,0.28);
-            border-radius: 15px;
-            padding: 24px;
-            background: rgba(255,255,255,0.82);
-        }
-
-        .receipt-top {
-            display: grid;
-            grid-template-columns: 1fr 1.25fr 1fr;
-            gap: 18px;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .receipt-logo-box {
-            min-height: 115px;
-            border: 1px solid rgba(14,165,233,0.35);
-            border-radius: 16px;
-            background: linear-gradient(180deg, #ffffff, #f0f9ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: var(--sky);
-            font-weight: 800;
-            padding: 10px;
-        }
-
-        .receipt-logo {
-            max-width: 120px;
-            max-height: 95px;
-            object-fit: contain;
-        }
-
-        .receipt-company {
-            text-align: center;
-        }
-
-        .receipt-company h2 {
-            margin: 0;
-            font-size: 2rem;
-            color: var(--sky);
-            font-weight: 800;
-        }
-
-        .receipt-company .subtitle {
-            margin: 6px 0 10px;
-            color: var(--ink);
-            font-weight: 700;
-        }
-
-        .receipt-contact {
-            display: grid;
-            gap: 5px;
-            color: var(--muted);
-            font-size: 0.92rem;
-        }
-
-        .receipt-title-box {
-            text-align: center;
-            border-radius: 18px;
-            padding: 18px 10px;
-            background: linear-gradient(135deg, var(--sky), var(--sky2));
-            color: white;
-            box-shadow: 0 12px 24px rgba(14,165,233,0.25);
-        }
-
-        .receipt-title-box h1 {
-            margin: 0;
-            font-size: 2rem;
-            font-weight: 800;
-        }
-
-        .receipt-title-box .receipt-id {
-            margin-top: 10px;
-            background: rgba(255,255,255,0.18);
-            border-radius: 999px;
-            padding: 6px 10px;
-            display: inline-block;
-            font-weight: 700;
-        }
-
-        .receipt-mini-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-        }
-
-        .receipt-pill {
-            border: 1px solid rgba(14,165,233,0.28);
-            background: #f0f9ff;
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-weight: 700;
-            color: #075985;
-        }
-
-        .receipt-info-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 14px;
-            margin-bottom: 18px;
-        }
-
-        .receipt-card {
-            border: 1px solid rgba(14,165,233,0.28);
-            border-radius: 16px;
-            background: rgba(255,255,255,0.92);
-            overflow: hidden;
-        }
-
-        .receipt-card-title {
-            background: linear-gradient(135deg, #0284c7, #38bdf8);
-            color: white;
-            padding: 10px 16px;
-            font-weight: 800;
-            display: inline-flex;
-            border-bottom-left-radius: 14px;
-        }
-
-        .receipt-card-body {
-            padding: 16px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .receipt-field {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 10px;
-        }
-
-        .receipt-label {
-            display: block;
-            color: var(--muted);
-            font-size: 0.82rem;
-            margin-bottom: 5px;
-        }
-
-        .receipt-value {
-            font-weight: 800;
-            color: var(--ink);
-        }
-
-        .premium-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            overflow: hidden;
-            border-radius: 16px;
-            border: 1px solid rgba(14,165,233,0.25);
-            margin-top: 16px;
-        }
-
-        .premium-table th {
-            background: linear-gradient(135deg, #0369a1, #38bdf8);
-            color: white;
-            padding: 13px;
-            text-align: center;
-            font-weight: 800;
-        }
-
-        .premium-table td {
-            padding: 13px;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: 700;
-        }
-
-        .premium-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .row-paid-now {
-            background: #ecfeff;
-            color: #0e7490;
-        }
-
-        .row-remaining {
-            background: #f0f9ff;
-            color: #075985;
-        }
-
-        .receipt-words {
-            margin-top: 18px;
-            border: 1px solid rgba(14,165,233,0.28);
-            background: linear-gradient(90deg, #e0f2fe, #ffffff);
-            border-radius: 16px;
-            padding: 14px 18px;
-            text-align: center;
-            font-weight: 800;
-            color: #075985;
-        }
-
-        .receipt-note-box {
-            margin-top: 16px;
-            border: 1px dashed rgba(14,165,233,0.45);
-            border-radius: 16px;
-            padding: 14px;
-            min-height: 54px;
-            color: var(--muted);
-            background: rgba(240,249,255,0.55);
-        }
-
-        .receipt-sign-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-top: 30px;
-            align-items: center;
-        }
-
-        .receipt-sign {
-            text-align: center;
-            font-weight: 800;
-        }
-
-        .receipt-sign-line {
-            width: 180px;
-            border-top: 2px solid #94a3b8;
-            margin: 18px auto 0;
-        }
-
-        .receipt-stamp {
-            width: 130px;
-            height: 130px;
-            border: 2px dashed var(--sky2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: auto;
-            color: var(--sky);
-            font-weight: 800;
-            background: rgba(224,242,254,0.45);
-        }
-
-        .receipt-footer {
-            margin-top: 28px;
-            text-align: center;
-            color: var(--sky);
-            font-weight: 800;
-            border-top: 1px solid rgba(14,165,233,0.25);
-            padding-top: 14px;
-        }
-.hidden { display: none !important; }
-
-        #loader {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(255,255,255,0.8);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 9999;
-            font-size: 2rem; color: var(--primary);
-        }
-
-
-        .status-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:0.8rem;font-weight:700;}
-        .status-active{background:#dcfce7;color:#16a34a;}
-        .status-paused{background:#fef9c3;color:#a16207;}
-        .status-finished{background:#f3f4f6;color:#6b7280;}
-        .report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-bottom:25px;}
-        .report-card{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:20px;border-radius:12px;text-align:center;box-shadow:var(--shadow);}
-        .report-card .rep-val{font-size:1.6rem;font-weight:800;margin-top:8px;}
-        .report-card .rep-lbl{font-size:0.88rem;opacity:0.88;}
-
-        @media print {
-            body * { visibility: hidden; }
-            #receipt-section, #receipt-section * { visibility: visible; }
-            #receipt-section { position: absolute; left: 0; top: 0; width: 100%; }
-            #receipt-container { border: none; box-shadow: none; width: 100%; max-width: 100%; padding: 0; margin: 0; border-radius: 0; }
-            .no-print { display: none !important; }
-        }
-    
-        /* Force colors/backgrounds to appear in print/PDF */
-        * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-        }
-
-        @page {
-            size: A4;
-            margin: 10mm;
-        }
-
-
-        .status-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:0.8rem;font-weight:700;}
-        .status-active{background:#dcfce7;color:#16a34a;}
-        .status-paused{background:#fef9c3;color:#a16207;}
-        .status-finished{background:#f3f4f6;color:#6b7280;}
-        .report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-bottom:25px;}
-        .report-card{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:20px;border-radius:12px;text-align:center;box-shadow:var(--shadow);}
-        .report-card .rep-val{font-size:1.6rem;font-weight:800;margin-top:8px;}
-        .report-card .rep-lbl{font-size:0.88rem;opacity:0.88;}
-
-        @media print {
-            html, body {
-                background: #ffffff !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            #receipt-container,
-            #receipt-container *,
-            .receipt-title-box,
-            .receipt-card-title,
-            .premium-table th,
-            .row-paid-now,
-            .row-remaining,
-            .receipt-words,
-            .receipt-pill,
-            .receipt-logo-box,
-            .receipt-note-box,
-            .receipt-stamp {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-            }
-
-            .receipt-title-box {
-                background: #0ea5e9 !important;
-                color: #ffffff !important;
-            }
-
-            .receipt-card-title {
-                background: #0ea5e9 !important;
-                color: #ffffff !important;
-            }
-
-            .premium-table th {
-                background: #0ea5e9 !important;
-                color: #ffffff !important;
-            }
-
-            .row-paid-now {
-                background: #ecfeff !important;
-                color: #0e7490 !important;
-            }
-
-            .row-remaining {
-                background: #f0f9ff !important;
-                color: #075985 !important;
-            }
-
-            .receipt-words {
-                background: #e0f2fe !important;
-                color: #075985 !important;
-            }
-
-            .receipt-pill,
-            .receipt-logo-box,
-            .receipt-note-box {
-                background: #f0f9ff !important;
-            }
-
-            #receipt-container::before,
-            #receipt-container::after {
-                display: none !important;
-            }
-        }
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام إدارة الأقساط الاحترافي</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--primary:#1e3a8a;--secondary:#3b82f6;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--dark:#1f2937;--light:#f3f4f6;--white:#fff;--border:#e5e7eb;--shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+*{box-sizing:border-box;font-family:'Tajawal',sans-serif}
+body{margin:0;background:#f8fafc;color:var(--dark);display:flex;height:100vh;overflow:hidden}
+.hidden{display:none!important}
+#loader{position:fixed;inset:0;background:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;z-index:9999;font-size:2rem;color:var(--primary)}
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;z-index:1000}
+.login-box{background:#fff;padding:38px;border-radius:14px;box-shadow:var(--shadow);width:100%;max-width:390px;text-align:center}
+.login-box h2{margin-top:0;color:var(--primary);font-weight:800}
+#app-screen{display:none;width:100%;height:100%}
+.sidebar{width:260px;background:var(--primary);color:#fff;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:20px;text-align:center;border-bottom:1px solid rgba(255,255,255,.12)}
+.sidebar-header h2{margin:0;font-size:1.25rem}
+.nav-links{list-style:none;margin:0;padding:0;flex:1}
+.nav-links li{border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-links button{width:100%;background:none;border:0;color:rgba(255,255,255,.82);padding:14px 18px;text-align:right;font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:10px}
+.nav-links button:hover,.nav-links button.active{background:rgba(255,255,255,.1);color:#fff;border-right:4px solid var(--secondary)}
+.dev-credit{padding:12px 14px;font-size:.78rem;color:rgba(255,255,255,.78);text-align:center;border-top:1px solid rgba(255,255,255,.14);line-height:1.7}
+.main-content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.top-bar{background:#fff;padding:15px 30px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.content-area{padding:30px;max-width:1200px;margin:0 auto;width:100%}
+.card{background:#fff;border-radius:12px;padding:24px;box-shadow:var(--shadow);margin-bottom:24px}
+.section-title{margin-top:0;color:var(--primary);border-bottom:2px solid var(--border);padding-bottom:10px;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.form-group{margin-bottom:14px}
+label{display:block;margin-bottom:7px;font-weight:700;color:#4b5563;font-size:.92rem}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:1rem;background:#fdfdfd}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--secondary);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.hint-text{display:block;font-size:.8rem;color:#6b7280;margin-top:5px}
+.amount-display{background:#eef2ff;color:var(--primary);padding:9px;border-radius:7px;font-weight:800;margin-top:6px;font-size:.9rem}
+.btn{padding:11px 18px;border:0;border-radius:8px;cursor:pointer;font-weight:800;font-size:.98rem;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:#152c6b}
+.btn-success{background:var(--success);color:#fff}.btn-danger{background:var(--danger);color:#fff}.btn-warning{background:var(--warning);color:#fff}.btn-whatsapp{background:#25D366;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{padding:12px;text-align:right;border-bottom:1px solid var(--border)}
+th{background:var(--light);font-weight:800}
+.stats-grid,.report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:25px}
+.stat-card{background:#fff;padding:18px;border-radius:12px;box-shadow:var(--shadow);border-right:5px solid var(--primary);display:flex;align-items:center;gap:14px}
+.stat-card.danger{border-color:var(--danger)}.stat-card.warning{border-color:var(--warning)}.stat-card.success{border-color:var(--success)}
+.stat-icon{font-size:1.8rem;color:#9ca3af}
+.report-card{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:20px;border-radius:12px;text-align:center;box-shadow:var(--shadow)}
+.report-card .val{font-size:1.55rem;font-weight:800;margin-top:8px}
+.status-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.82rem;font-weight:800}
+.status-active{background:#dcfce7;color:#16a34a}.status-paused{background:#fef9c3;color:#a16207}.status-finished{background:#f3f4f6;color:#6b7280}
+.alert-item{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px;border:1px solid var(--border);border-right:4px solid var(--primary);border-radius:9px;margin-bottom:10px;background:#fff}
+.alert-item.urgent{border-right-color:var(--danger);background:#fef2f2}.alert-item.today{border-right-color:var(--warning);background:#fffbeb}
+.ltr-number{direction:ltr;unicode-bidi:embed;display:inline-block;text-align:left}
+#receipt-container{max-width:800px;margin:20px auto;background:#fff;border:2px solid #38bdf8;border-radius:18px;padding:34px;box-shadow:0 18px 45px rgba(2,132,199,.14)}
+.receipt-frame{border:1px solid rgba(14,165,233,.28);border-radius:15px;padding:24px;background:#fff}
+.receipt-top{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:18px;align-items:center;margin-bottom:20px}
+.receipt-logo-box{min-height:110px;border:1px solid rgba(14,165,233,.35);border-radius:16px;background:#f0f9ff;display:flex;align-items:center;justify-content:center;text-align:center;color:#0284c7;font-weight:800}
+.receipt-logo{max-width:120px;max-height:95px;object-fit:contain}
+.receipt-company{text-align:center}.receipt-company h2{color:#0284c7;margin:0;font-size:2rem}
+.receipt-title-box{background:linear-gradient(135deg,#0284c7,#38bdf8);color:#fff;border-radius:18px;text-align:center;padding:18px 10px}
+.receipt-title-box h1{margin:0}
+.receipt-id{background:rgba(255,255,255,.18);border-radius:999px;padding:6px 10px;display:inline-block;margin-top:10px}
+.receipt-pill{display:inline-block;border:1px solid rgba(14,165,233,.28);background:#f0f9ff;border-radius:12px;padding:10px 14px;color:#075985;font-weight:800;margin:5px}
+.receipt-card{border:1px solid rgba(14,165,233,.28);border-radius:16px;overflow:hidden;margin-top:15px}
+.receipt-card-title{background:#0ea5e9;color:#fff;padding:10px 16px;font-weight:800;display:inline-flex;border-bottom-left-radius:14px}
+.receipt-card-body{padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.receipt-field{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px}
+.receipt-label{display:block;color:#64748b;font-size:.82rem;margin-bottom:5px}.receipt-value{font-weight:800}
+.premium-table{border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:16px;border:1px solid rgba(14,165,233,.25);margin-top:16px}
+.premium-table th{background:#0ea5e9;color:#fff;text-align:center}.premium-table td{text-align:center;font-weight:800}
+.row-paid-now{background:#ecfeff;color:#0e7490}.row-remaining{background:#f0f9ff;color:#075985}
+.receipt-words{margin-top:18px;border:1px solid rgba(14,165,233,.28);background:#e0f2fe;border-radius:16px;padding:14px 18px;text-align:center;font-weight:800;color:#075985}
+.receipt-note-box{margin-top:16px;border:1px dashed rgba(14,165,233,.45);border-radius:16px;padding:14px;color:#64748b;background:#f0f9ff}
+.receipt-sign-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px;align-items:center}.receipt-sign{text-align:center;font-weight:800}.receipt-line{width:180px;border-top:2px solid #94a3b8;margin:18px auto 0}.receipt-stamp{width:120px;height:120px;border:2px dashed #38bdf8;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:auto;color:#0284c7;font-weight:800}
+.receipt-footer{text-align:center;margin-top:24px;color:#0284c7;font-weight:800}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+@page{size:A4;margin:10mm}
+@media print{body *{visibility:hidden}#receipt-section,#receipt-section *{visibility:visible}#receipt-section{position:absolute;left:0;top:0;width:100%}.no-print{display:none!important}#receipt-container{box-shadow:none;margin:0;border:0;padding:0;max-width:100%;width:100%}}
+@media(max-width:900px){.sidebar{width:250px}.content-area{padding:18px}.receipt-top{grid-template-columns:1fr}.receipt-card-body{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+<div id="loader" class="hidden"><i class="fas fa-spinner fa-spin"></i></div>
 
-    <div id="loader" class="hidden"><i class="fas fa-spinner fa-spin"></i></div>
+<div id="login-screen">
+  <div class="login-box">
+    <h2><i class="fas fa-lock"></i> نظام الإدارة الآمن</h2>
+    <p style="color:#666">يرجى تسجيل الدخول للوصول إلى بيانات الشركة</p>
+    <div class="form-group"><input type="email" id="loginEmail" placeholder="البريد الإلكتروني"></div>
+    <div class="form-group"><input type="password" id="loginPassword" placeholder="كلمة المرور"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">تسجيل الدخول <i class="fas fa-sign-in-alt"></i></button>
+    <p id="loginError" style="color:red;display:none;font-size:.9rem"></p>
+  </div>
+</div>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h2><i class="fas fa-lock"></i> نظام الإدارة الآمن</h2>
-            <p style="color: #666; margin-bottom: 20px;">يرجى تسجيل الدخول للوصول إلى بيانات الشركة</p>
-            <div class="form-group">
-                <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
-            </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="handleLogin()">تسجيل الدخول <i class="fas fa-sign-in-alt"></i></button>
-            <p id="loginError" style="color: red; display: none; margin-top: 10px; font-size: 0.9rem;"></p>
+<div id="app-screen">
+  <aside class="sidebar no-print">
+    <div class="sidebar-header"><h2 id="sidebarCompanyName">نظام إدارة الأقساط</h2></div>
+    <ul class="nav-links">
+      <li><button onclick="switchTab('dashboard')" id="nav-dashboard" class="active"><i class="fas fa-chart-line"></i> لوحة الإشعارات</button></li>
+      <li><button onclick="switchTab('newContract')" id="nav-newContract"><i class="fas fa-file-contract"></i> إضافة عقد</button></li>
+      <li><button onclick="switchTab('newPayment')" id="nav-newPayment"><i class="fas fa-money-bill-wave"></i> إضافة قسط</button></li>
+      <li><button onclick="switchTab('clients')" id="nav-clients"><i class="fas fa-users"></i> بحث والعملاء</button></li>
+      <li><button onclick="switchTab('receiptSearch')" id="nav-receiptSearch"><i class="fas fa-receipt"></i> بحث الإيصال</button></li>
+      <li><button onclick="switchTab('overdue')" id="nav-overdue"><i class="fas fa-user-clock"></i> معالجة المتأخرين</button></li>
+      <li><button onclick="switchTab('reports')" id="nav-reports"><i class="fas fa-chart-bar"></i> التقارير الشهرية</button></li>
+      <li><button onclick="switchTab('settings')" id="nav-settings"><i class="fas fa-cogs"></i> إعدادات الشركة</button></li>
+      <li style="margin-top:auto"><button onclick="handleLogout()" style="color:#fca5a5"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button></li>
+    </ul>
+    <div class="dev-credit">تم تطوير هذا العمل من قبل<br><strong>أمير كاظم الشبلاوي 2026</strong></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar no-print">
+      <h3 id="currentTabTitle" style="margin:0;color:var(--primary)">لوحة الإشعارات</h3>
+      <div><strong><i class="fas fa-user-tie"></i> المدير: <span id="topBarManagerName">---</span></strong></div>
+    </header>
+
+    <div class="content-area">
+      <section id="sec-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card"><i class="fas fa-users stat-icon"></i><div><div>إجمالي العملاء</div><strong id="dashTotalClients" style="font-size:1.5rem">0</strong></div></div>
+          <div class="stat-card danger"><i class="fas fa-exclamation-triangle stat-icon" style="color:var(--danger)"></i><div><div style="color:var(--danger)">متأخرون</div><strong id="dashOverdue" style="font-size:1.5rem;color:var(--danger)">0</strong></div></div>
+          <div class="stat-card warning"><i class="fas fa-calendar-day stat-icon" style="color:var(--warning)"></i><div><div style="color:var(--warning)">استحقاق اليوم</div><strong id="dashDueToday" style="font-size:1.5rem;color:var(--warning)">0</strong></div></div>
+          <div class="stat-card success"><i class="fas fa-wallet stat-icon" style="color:var(--success)"></i><div><div style="color:var(--success)">إجمالي المطلوبات</div><strong id="dashTotalRemaining" style="font-size:1.15rem;color:var(--success)">0</strong></div></div>
+          <div class="stat-card"><i class="fas fa-chart-pie stat-icon" style="color:var(--primary)"></i><div><div style="color:var(--primary)">الهامش الربحي</div><strong id="dashTotalProfit" style="font-size:1.15rem;color:var(--primary)">0</strong></div></div>
         </div>
+        <div class="card"><h3 class="section-title"><i class="fas fa-bell"></i> تنبيهات الاستحقاق</h3><div id="notificationsContainer"></div></div>
+      </section>
+
+      <section id="sec-newContract" class="hidden">
+        <div class="card">
+          <h3 class="section-title">تسجيل عقد تقسيط جديد</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>اسم العميل</label><input id="newClientName" type="text"></div>
+            <div class="form-group"><label>رقم هاتف العميل</label><input id="newClientPhone" type="tel" placeholder="07xxxxxxxx"></div>
+            <div class="form-group"><label>اسم الكفيل</label><input id="newGuarantorName" type="text"></div>
+            <div class="form-group"><label>رقم هاتف الكفيل</label><input id="newGuarantorPhone" type="tel"></div>
+            <div class="form-group"><label>السلعة / المادة</label><input id="newItemType" type="text"></div>
+          </div>
+          <h4 style="color:var(--primary)">التفاصيل المالية للعقد</h4>
+          <div class="form-grid">
+            <div class="form-group"><label>سعر الشراء الداخلي (بدون 000)</label><input type="number" id="newPurchasePrice" oninput="calcNewContract()"><div class="amount-display" id="dispNewPurchasePrice">القيمة: 0 دينار</div></div>
+            <div class="form-group"><label>المبلغ الكلي للزبون (بدون 000)</label><input type="number" id="newFinalPrice" oninput="calcNewContract()"><div class="amount-display" id="dispNewFinalPrice">القيمة: 0 دينار</div></div>
+            <div class="form-group"><label>الدفعة الأولية / المقدمة (بدون 000)</label><input type="number" id="newInitialPayment" oninput="calcNewContract()" placeholder="اختياري"><div class="amount-display" id="dispNewInitialPayment">القيمة: 0 دينار</div></div>
+            <div class="form-group"><label>القسط الشهري (بدون 000)</label><input type="number" id="newMonthlyInstallment" oninput="calcNewContract()"><div class="amount-display" id="dispNewMonthly">القيمة: 0 دينار</div></div>
+            <div class="form-group"><label>تاريخ أول استحقاق</label><input type="date" id="newFirstDueDate"></div>
+          </div>
+          <div class="amount-display">المبلغ الكلي: <span id="summaryTotal">0</span> | الدفعة الأولية: <span id="summaryInitial">0</span> | المتبقي بعد المقدمة: <span id="summaryRemainingAfterInitial">0</span> | الربح المتوقع: <span id="summaryProfit">0</span> | الأشهر: <span id="summaryMonths">0</span></div>
+          <div style="text-align:left;margin-top:20px"><button class="btn btn-success" onclick="saveNewContract()"><i class="fas fa-save"></i> حفظ العقد</button></div>
+        </div>
+      </section>
+
+      <section id="sec-newPayment" class="hidden">
+        <div class="card">
+          <h3 class="section-title">تسجيل دفعة لعميل حالي</h3>
+          <div class="form-group" style="max-width:420px"><label>ابحث باسم الزبون</label><input id="paySearchName" list="clientNamesList" oninput="loadClientForPayment()" placeholder="اكتب اسم الزبون"><datalist id="clientNamesList"></datalist></div>
+          <div id="paymentArea" class="hidden" style="background:#f8fafc;border:1px solid var(--border);padding:20px;border-radius:10px">
+            <h4>بيانات العميل: <span id="payClientName" style="color:var(--primary)"></span></h4>
+            <div class="form-grid">
+              <div><strong>المبلغ الكلي:</strong> <span id="payTotalDebt">0</span></div>
+              <div><strong>المسدد:</strong> <span id="payPaid">0</span></div>
+              <div><strong style="color:var(--danger)">المتبقي:</strong> <span id="payRemaining">0</span></div>
+              <div><strong>القسط الشهري:</strong> <span id="payMonthly">0</span></div>
+            </div>
+            <div class="form-grid" style="margin-top:15px">
+              <div class="form-group"><label>المبلغ المدفوع الآن (بدون 000)</label><input type="number" id="payAmountInput" oninput="calcPaymentDisplay()"><div class="amount-display" id="dispPayAmount">القيمة: 0 دينار</div></div>
+              <div class="form-group"><label>تاريخ التسديد</label><input type="date" id="payPaymentDate"></div>
+              <div class="form-group"><label>الاستحقاق القادم</label><input type="date" id="payNextDueDate"></div>
+            </div>
+            <button class="btn btn-primary" onclick="submitPayment()"><i class="fas fa-check"></i> تسجيل الدفعة وإصدار إيصال</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="sec-clients" class="hidden">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;align-items:center">
+            <h3 class="section-title" style="margin-bottom:0">بحث العملاء</h3>
+            <button class="btn btn-primary" onclick="printClientsList()"><i class="fas fa-print"></i> طباعة قائمة العملاء</button>
+          </div>
+          <input type="text" id="generalSearch" placeholder="اكتب اسم الزبون أو رقم الهاتف أو المادة..." oninput="renderClientsList()" style="margin-top:15px">
+        </div>
+        <div class="card">
+          <h3 class="section-title">قائمة العملاء</h3>
+          <div style="overflow-x:auto">
+            <table><thead><tr><th>الاسم</th><th>الهاتف</th><th>المادة</th><th>الحالة</th><th>المتبقي</th><th>الاستحقاق</th><th>إجراء</th></tr></thead><tbody id="clientsTableBody"></tbody></table>
+          </div>
+        </div>
+        <div id="clientFullDetails" class="card hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--border);padding-bottom:10px;margin-bottom:20px">
+            <h3 style="margin:0;color:var(--primary)">الملف المالي: <span id="detailName"></span></h3>
+            <button class="btn btn-danger" onclick="closeClientDetails()"><i class="fas fa-times"></i> إغلاق</button>
+          </div>
+          <div class="form-grid">
+            <div><strong>الهاتف:</strong> <span id="detailPhone"></span></div>
+            <div><strong>المادة:</strong> <span id="detailItem"></span></div>
+            <div><strong>الكفيل:</strong> <span id="detailGuarantor"></span></div>
+            <div><strong>الاستحقاق:</strong> <span id="detailNextDue"></span></div>
+            <div><strong>الحالة:</strong> <span id="detailStatusBadge"></span> <button class="btn btn-warning" style="padding:4px 10px;font-size:.8rem" id="btnToggleStatus" onclick="toggleClientStatus()"></button></div>
+          </div>
+          <div style="background:#eef2ff;padding:15px;border-radius:9px;margin:20px 0;display:flex;gap:20px;flex-wrap:wrap">
+            <div><small>المبلغ الكلي</small><br><strong id="detailTotal"></strong></div>
+            <div><small>الدفعة الأولية</small><br><strong id="detailInitialPayment" style="color:var(--primary)"></strong></div>
+            <div><small>المسدد</small><br><strong id="detailPaid" style="color:var(--success)"></strong></div>
+            <div><small>المتبقي</small><br><strong id="detailRemaining" style="color:var(--danger)"></strong></div>
+            <div><small>القسط الشهري</small><br><strong id="detailMonthly"></strong></div>
+          </div>
+          <div class="form-group"><label>ملاحظة خاصة</label><textarea id="clientNoteInput" rows="2"></textarea><button class="btn btn-success" style="margin-top:8px" onclick="saveClientNote()"><i class="fas fa-save"></i> حفظ الملاحظة</button></div>
+          <div style="margin-bottom:20px">
+            <button class="btn btn-whatsapp" onclick="sendReminderFromDetails()"><i class="fab fa-whatsapp"></i> واتساب</button>
+            <button class="btn btn-primary" onclick="printStatement()"><i class="fas fa-print"></i> كشف حساب</button>
+            <button class="btn btn-danger" onclick="deleteCurrentClient()"><i class="fas fa-trash"></i> حذف الزبون</button>
+          </div>
+          <h4>سجل الدفعات</h4>
+          <table><thead><tr><th>التاريخ</th><th>رقم الإيصال</th><th>المبلغ</th><th>إجراء</th></tr></thead><tbody id="historyTableBody"></tbody></table>
+        </div>
+      </section>
+
+      <section id="sec-receiptSearch" class="hidden">
+        <div class="card">
+          <h3 class="section-title"><i class="fas fa-receipt"></i> البحث عن الإيصال</h3>
+          <input type="text" id="receiptSearchInput" placeholder="اكتب رقم الإيصال الرقمي كامل" oninput="searchReceiptByNumber()">
+          <div id="receiptSearchResults" style="margin-top:15px"></div>
+        </div>
+      </section>
+
+      <section id="sec-overdue" class="hidden">
+        <div class="card"><h3 class="section-title"><i class="fas fa-user-clock"></i> معالجة المتأخرين</h3><div id="overdueManagementList"></div></div>
+      </section>
+
+      <section id="sec-reports" class="hidden">
+        <div class="card">
+          <h3 class="section-title"><i class="fas fa-chart-bar"></i> التقرير الشهري</h3>
+          <div class="form-group" style="max-width:300px"><label>اختر الشهر</label><input type="month" id="reportMonth" onchange="renderReports()"></div>
+          <div class="report-grid">
+            <div class="report-card"><div>دخل هذا الشهر</div><div class="val" id="repMonthCollections">0</div></div>
+            <div class="report-card" style="background:linear-gradient(135deg,#b45309,#f59e0b)"><div>عقود جديدة</div><div class="val" id="repNewContracts">0</div></div>
+            <div class="report-card" style="background:linear-gradient(135deg,#059669,#10b981)"><div>ربح العقود الجديدة</div><div class="val" id="repMonthProfit">0</div></div>
+          </div>
+        </div>
+        <div class="card"><h3 class="section-title">دفعات الشهر</h3><table><thead><tr><th>الزبون</th><th>المادة</th><th>التاريخ</th><th>رقم الإيصال</th><th>المبلغ</th></tr></thead><tbody id="repPaymentsTableBody"></tbody></table></div>
+      </section>
+
+      <section id="sec-settings" class="hidden">
+        <div class="card">
+          <h3 class="section-title"><i class="fas fa-building"></i> إعدادات الشركة</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>اسم الشركة</label><input id="setCompanyName"></div>
+            <div class="form-group"><label>اسم المدير</label><input id="setManagerName"></div>
+            <div class="form-group"><label>هاتف المكتب</label><input id="setPhone"></div>
+            <div class="form-group"><label>واتساب</label><input id="setWhatsapp"></div>
+            <div class="form-group"><label>العنوان</label><input id="setAddress"></div>
+            <div class="form-group"><label>ملاحظة الإيصال</label><textarea id="setReceiptNote" rows="2"></textarea></div>
+            <div class="form-group"><label>الشعار</label><input type="file" id="setLogoFile" accept="image/*" onchange="previewLogo(event)"><img id="logoPreview" style="display:none;max-height:90px;margin-top:8px;border:1px solid #ccc;border-radius:8px;padding:5px"></div>
+          </div>
+          <button class="btn btn-success" onclick="saveSettings()"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+        </div>
+      </section>
+
+      <section id="receipt-section" class="hidden">
+        <div class="no-print" style="max-width:800px;margin:0 auto 10px;text-align:left">
+          <button class="btn btn-danger" onclick="closeReceipt()"><i class="fas fa-times"></i> إغلاق</button>
+          <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
+          <button class="btn btn-whatsapp" id="btnShareReceipt"><i class="fab fa-whatsapp"></i> مشاركة</button>
+        </div>
+        <div id="receipt-container">
+          <div class="receipt-frame">
+            <div class="receipt-top">
+              <div class="receipt-logo-box"><img id="recLogo" class="receipt-logo hidden"><span id="recLogoText">شعار الشركة</span></div>
+              <div class="receipt-company"><h2 id="recCompanyName">اسم الشركة</h2><div>نظام إدارة الأقساط</div><div style="color:#64748b;font-size:.92rem">بإدارة: <span id="recManager"></span><br>الهاتف: <span id="recPhone"></span><br>العنوان: <span id="recAddress"></span></div></div>
+              <div class="receipt-title-box"><h1>إيصال دفع</h1><div class="receipt-id">رقم الإيصال: <span id="recTxId"></span></div></div>
+            </div>
+            <div><span class="receipt-pill">تاريخ الإصدار: <span id="recDate"></span></span><span class="receipt-pill">الاستحقاق القادم: <span id="recNextDue"></span></span></div>
+            <div class="receipt-card"><div class="receipt-card-title">تفاصيل الزبون</div><div class="receipt-card-body"><div class="receipt-field"><span class="receipt-label">اسم الزبون</span><span class="receipt-value" id="recClientName"></span></div><div class="receipt-field"><span class="receipt-label">الهاتف</span><span class="receipt-value" id="recClientPhone"></span></div><div class="receipt-field"><span class="receipt-label">المادة</span><span class="receipt-value" id="recItem"></span></div></div></div>
+            <table class="premium-table"><thead><tr><th>التفاصيل</th><th>القيمة</th></tr></thead><tbody><tr><td>المبلغ الكلي</td><td id="recTotalDebt"></td></tr><tr><td>القسط الشهري</td><td id="recMonthly"></td></tr><tr><td>إجمالي المدفوع</td><td id="recPaid"></td></tr><tr id="recCurrentPaymentRow" class="row-paid-now"><td>المدفوع الآن</td><td><span id="recCurrentPaymentAmount"></span><div style="font-size:.82rem">تاريخ التسديد: <span id="recPaymentDate"></span></div></td></tr><tr class="row-remaining"><td>المتبقي</td><td id="recRemaining"></td></tr></tbody></table>
+            <div class="receipt-words" id="recAmountsWords"></div>
+            <div class="receipt-note-box" id="recNote"></div>
+            <div class="receipt-sign-row"><div class="receipt-sign">توقيع المسؤول<div class="receipt-line"></div></div><div class="receipt-stamp">ختم الشركة</div></div>
+            <div class="receipt-footer">شكراً لتعاملكم معنا</div>
+          </div>
+        </div>
+      </section>
     </div>
+  </main>
+</div>
 
-    <div id="app-screen">
-        <aside class="sidebar no-print">
-            <div class="sidebar-header">
-                <h2 id="sidebarCompanyName">نظام إدارة الأقساط</h2>
-            </div>
-            <ul class="nav-links">
-                <li><button onclick="switchTab('dashboard')" id="nav-dashboard" class="active"><i class="fas fa-chart-line"></i> لوحة الإشعارات</button></li>
-                <li><button onclick="switchTab('newContract')" id="nav-newContract"><i class="fas fa-file-contract"></i> إضافة عقد</button></li>
-                <li><button onclick="switchTab('newPayment')" id="nav-newPayment"><i class="fas fa-money-bill-wave"></i> إضافة قسط</button></li>
-                <li><button onclick="switchTab('clients')" id="nav-clients"><i class="fas fa-users"></i> بحث والعملاء</button></li>
-                <li><button onclick="switchTab('receiptSearch')" id="nav-receiptSearch"><i class="fas fa-receipt"></i> بحث الإيصال</button></li>
-            <li><button onclick="switchTab('overdue')" id="nav-overdue"><i class="fas fa-user-clock"></i> معالجة المتأخرين</button></li>
-                <li><button onclick="switchTab('reports')" id="nav-reports"><i class="fas fa-chart-bar"></i> التقارير الشهرية</button></li>
-                <li><button onclick="switchTab('settings')" id="nav-settings"><i class="fas fa-cogs"></i> إعدادات الشركة</button></li>
-                <li style="margin-top: auto;"><button onclick="handleLogout()" style="color: #fca5a5;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button></li>
-            </ul>
-            <div style="padding:12px 14px; font-size:0.78rem; color:rgba(255,255,255,0.75); text-align:center; border-top:1px solid rgba(255,255,255,0.12); line-height:1.6;">
-                تم تطوير هذا العمل من قبل<br>
-                <strong>أمير كاظم الشبلاوي 2026</strong>
-            </div>
-        </aside>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        <main class="main-content">
-            <header class="top-bar no-print">
-                <h3 id="currentTabTitle" style="margin: 0; color: var(--primary);">لوحة الإشعارات</h3>
-                <div>
-                    <span style="font-weight: bold; margin-left: 15px;"><i class="fas fa-user-tie"></i> المدير: <span id="topBarManagerName">---</span></span>
-                </div>
-            </header>
-            <div class="no-print" id="syncStatusBar" style="background:#eff6ff;border-bottom:1px solid #dbeafe;padding:10px 30px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-                <div style="font-weight:700;color:#1e3a8a;">
-                    <i class="fas fa-wifi" id="netStatusIcon"></i>
-                    <span id="netStatusText">جاري التحقق من الاتصال...</span>
-                </div>
-                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                    <span id="pendingOpsBadge" style="background:#fff;border:1px solid #bfdbfe;color:#1d4ed8;padding:6px 10px;border-radius:999px;font-size:0.9rem;">عمليات معلقة: 0</span>
-                    <button class="btn btn-primary" style="padding:8px 14px;font-size:0.9rem;" onclick="syncPendingOperations()"><i class="fas fa-rotate"></i> مزامنة الآن</button>
-                </div>
-            </div>
+const firebaseConfig={apiKey:"AIzaSyAYQwmNQaagd4QobK8QGyR7rSMS6HVigWk",authDomain:"ahmed-6706d.firebaseapp.com",projectId:"ahmed-6706d",storageBucket:"ahmed-6706d.firebasestorage.app",messagingSenderId:"244229036057",appId:"1:244229036057:web:ee39dd5f345ef8e615f288"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 
+let currentCompanySettings={},allClientsData=[],logoBase64="",currentActiveClientForPayment=null,currentViewedClient=null;
+const statusLabel={active:'نشط',paused:'متوقف',finished:'منتهي'},statusClass={active:'status-active',paused:'status-paused',finished:'status-finished'};
+const $=id=>document.getElementById(id);
+const formatMoney=n=>(parseFloat(n)||0).toLocaleString('en-US');
+const toKilo=v=>(parseFloat(v)||0)*1000;
+const showLoader=()=>$('loader').classList.remove('hidden'),hideLoader=()=>$('loader').classList.add('hidden');
+const phone964=p=>{p=(p||'').trim();return p.startsWith('07')?'964'+p.slice(1):p};
+const getClientStatus=c=>{const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);return rem<=0?'finished':(c.status||'active')};
+const receiptId=()=>{const d=new Date();return `${String(d.getFullYear()).slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}${String(d.getSeconds()).padStart(2,'0')}${String(d.getMilliseconds()).padStart(3,'0')}${Math.floor(100+Math.random()*900)}`};
+const words=n=>`${formatMoney(n)} دينار عراقي فقط لا غير`;
 
-            <div class="content-area">
-                
-                <section id="sec-dashboard">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <i class="fas fa-users stat-icon"></i>
-                            <div>
-                                <div style="font-size: 0.9rem; color: #666;">إجمالي العملاء</div>
-                                <div style="font-size: 1.5rem; font-weight: bold;" id="dashTotalClients">0</div>
-                            </div>
-                        </div>
-                        <div class="stat-card danger">
-                            <i class="fas fa-exclamation-triangle stat-icon" style="color: var(--danger);"></i>
-                            <div>
-                                <div style="font-size: 0.9rem; color: var(--danger);">متأخرون عن الدفع</div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--danger);" id="dashOverdue">0</div>
-                            </div>
-                        </div>
-                        <div class="stat-card warning">
-                            <i class="fas fa-calendar-day stat-icon" style="color: var(--warning);"></i>
-                            <div>
-                                <div style="font-size: 0.9rem; color: var(--warning);">استحقاق اليوم</div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--warning);" id="dashDueToday">0</div>
-                            </div>
-                        </div>
-                        <div class="stat-card success">
-                            <i class="fas fa-wallet stat-icon" style="color: var(--success);"></i>
-                            <div>
-                                <div style="font-size: 0.9rem; color: var(--success);">إجمالي المطلوبات</div>
-                                <div style="font-size: 1.25rem; font-weight: bold; color: var(--success);" id="dashTotalReceivable">0 د.ع</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-chart-pie stat-icon" style="color: var(--primary);"></i>
-                            <div>
-                                <div style="font-size: 0.9rem; color: var(--primary);">الهامش الربحي</div>
-                                <div style="font-size: 1.25rem; font-weight: bold; color: var(--primary);" id="dashTotalProfit">0 د.ع</div>
-                            </div>
-                        </div>
-                    </div>
+window.handleLogin=async()=>{const e=$('loginEmail').value.trim(),p=$('loginPassword').value,err=$('loginError');if(!e||!p)return;showLoader();try{await signInWithEmailAndPassword(auth,e,p);err.style.display='none'}catch(x){err.textContent='خطأ في تسجيل الدخول. تأكد من البريد وكلمة المرور.';err.style.display='block'}hideLoader()};
+window.handleLogout=async()=>{if(confirm('تسجيل الخروج؟'))await signOut(auth)};
 
-                    <div class="card">
-                        <h3 class="section-title"><i class="fas fa-bell"></i> تنبيهات الاستحقاق</h3>
-                        <div id="notificationsContainer">
-                            <p style="color: #666;">جاري جلب البيانات...</p>
-                        </div>
-                    </div>
-                </section>
+onAuthStateChanged(auth,async user=>{if(user){$('login-screen').style.display='none';$('app-screen').style.display='flex';await loadSettings();await loadAllClients()}else{$('login-screen').style.display='flex';$('app-screen').style.display='none'}});
 
-                <section id="sec-newContract" class="hidden">
-                    <div class="card">
-                        <h3 class="section-title">تسجيل عقد تقسيط جديد</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>اسم العميل (الرباعي)</label>
-                                <input type="text" id="newClientName" placeholder="اسم العميل">
-                            </div>
-                            <div class="form-group">
-                                <label>رقم هاتف العميل</label>
-                                <input type="tel" id="newClientPhone" placeholder="07xxxxxxxx">
-                            </div>
-                            <div class="form-group">
-                                <label>اسم الكفيل</label>
-                                <input type="text" id="newGuarantorName" placeholder="اختياري">
-                            </div>
-                            <div class="form-group">
-                                <label>رقم هاتف الكفيل</label>
-                                <input type="tel" id="newGuarantorPhone" placeholder="اختياري">
-                            </div>
-                            <div class="form-group">
-                                <label>السلعة / المادة</label>
-                                <input type="text" id="newItemType" placeholder="مثال: iPhone 14 Pro Max">
-                            </div>
-                        </div>
+async function loadSettings(){try{const s=await getDoc(doc(db,'settings','business_info'));currentCompanySettings=s.exists()?s.data():{}}catch{currentCompanySettings={}}applySettingsUI()}
+function applySettingsUI(){['CompanyName','ManagerName','Phone','Whatsapp','Address','ReceiptNote'].forEach(k=>{const key=k[0].toLowerCase()+k.slice(1),el=$('set'+k);if(el)el.value=currentCompanySettings[key]||''});$('sidebarCompanyName').textContent=currentCompanySettings.companyName||'نظام إدارة الأقساط';$('topBarManagerName').textContent=currentCompanySettings.managerName||'المدير';if(currentCompanySettings.logoUrl){logoBase64=currentCompanySettings.logoUrl;$('logoPreview').src=logoBase64;$('logoPreview').style.display='block'}}
 
-                        <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
-                        
-                        <h4 style="color: var(--primary);">التفاصيل المالية للعقد</h4>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>سعر الشراء (رأس المال) (بدون 000)</label>
-                                <span class="hint-text">السعر الذي اشتريت به السلعة فعلياً</span>
-                                <input type="number" id="newPurchasePrice" placeholder="سعر الشراء" oninput="calcNewContract()">
-                                <div class="amount-display" id="dispNewPurchasePrice">القيمة: 0 دينار</div>
-                                <small class="hint-text" id="dispNewPurchasePriceWords">صفر دينار فقط لا غير</small>
-                            </div>
-                            <div class="form-group">
-                                <label>السعر بعد القسط / إجمالي مبلغ التقسيط النهائي (بدون 000)</label>
-                                <span class="hint-text">أدخل السعر النهائي المتفق عليه مع الزبون (مثال: أدخل 1000 لتعني مليون دينار)</span>
-                                <input type="number" id="newFinalPrice" placeholder="إجمالي الدين النهائي" oninput="calcNewContract()">
-                                <div class="amount-display" id="dispNewFinalPrice">القيمة: 0 دينار</div>
-                                <small class="hint-text" id="dispNewFinalPriceWords">صفر دينار فقط لا غير</small>
-                            </div>
-                            <div class="form-group">
-                                <label>القسط الشهري المتفق عليه (بدون 000)</label>
-                                <input type="number" id="newMonthlyInstallment" placeholder="مبلغ القسط" oninput="calcNewContract()">
-                                <div class="amount-display" id="dispNewMonthly">القيمة: 0 دينار</div>
-                                <small class="hint-text" id="dispNewMonthlyWords">صفر دينار فقط لا غير</small>
-                            </div>
-                            <div class="form-group">
-                                <label>تاريخ أول استحقاق</label>
-                                <input type="date" id="newFirstDueDate">
-                            </div>
-                        </div>
-                        <div style="background: #f9fafb; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e5e7eb;">
-                            <strong>ملخص العقد:</strong> 
-                            سعر الشراء: <span id="summaryPurchase" style="color: #374151; font-weight:bold;">0</span> | 
-                            سعر البيع بالأقساط: <span id="summaryTotal" style="color: var(--primary); font-weight:bold;">0</span> | 
-                            الربح المتوقع: <span id="summaryProfit" style="color: var(--warning); font-weight:bold;">0</span> | 
-                            الأشهر المتوقعة: <span id="summaryMonths" style="color: var(--success); font-weight:bold;">0</span>
-                        </div>
-                        <div style="margin-top: 20px; text-align: left;">
-                            <button class="btn btn-success" onclick="saveNewContract()"><i class="fas fa-save"></i> حفظ العقد وإنشاء سجل للعميل</button>
-                        </div>
-                    </div>
+window.previewLogo=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{logoBase64=r.result;$('logoPreview').src=logoBase64;$('logoPreview').style.display='block'};r.readAsDataURL(f)};
+window.saveSettings=async()=>{const data={companyName:$('setCompanyName').value.trim(),managerName:$('setManagerName').value.trim(),phone:$('setPhone').value.trim(),whatsapp:$('setWhatsapp').value.trim(),address:$('setAddress').value.trim(),receiptNote:$('setReceiptNote').value.trim(),logoUrl:logoBase64||''};showLoader();try{await setDoc(doc(db,'settings','business_info'),data);currentCompanySettings=data;applySettingsUI();alert('تم حفظ الإعدادات')}catch(e){alert('خطأ: '+e.message)}hideLoader()};
 
-                    </section>
+async function loadAllClients(){try{const qs=await getDocs(collection(db,'clients'));allClientsData=[];qs.forEach(d=>allClientsData.push({id:d.id,...d.data()}));renderDashboard();renderClientsList();populateNames();if($('reportMonth')?.value)renderReports();if(!$('sec-overdue').classList.contains('hidden'))renderOverdue()}catch(e){console.error(e);alert('تعذر جلب بيانات العملاء: '+e.message)}}
+function populateNames(){const l=$('clientNamesList');if(l)l.innerHTML=allClientsData.map(c=>`<option value="${c.name||''}"></option>`).join('')}
 
-                <section id="sec-newPayment" class="hidden">
-                    <div class="card">
-                        <h3 class="section-title">تسجيل دفعة لعميل حالي</h3>
-                        <div class="form-group" style="max-width: 400px;">
-                            <label>ابحث باسم الزبون لاختياره</label>
-                            <input type="text" id="paySearchName" list="clientNamesList" placeholder="أدخل اسم الزبون..." oninput="loadClientForPayment()">
-                            <datalist id="clientNamesList"></datalist>
-                        </div>
-                        
-                        <div id="paymentArea" class="hidden" style="background: #f8fafc; border: 1px solid var(--border); padding: 20px; border-radius: 8px;">
-                            <h4 style="margin-top:0;">بيانات العميل: <span id="payClientName" style="color: var(--primary);"></span></h4>
-                            <div class="form-grid" style="margin-bottom: 20px;">
-                                <div><strong>سعر الشراء:</strong> <span id="payPurchase">0</span></div>
-                                <div><strong>السعر بعد القسط:</strong> <span id="payTotalDebt">0</span></div>
-                                <div><strong>المسدد سابقاً:</strong> <span id="payPaid">0</span></div>
-                                <div><strong style="color: var(--danger);">المتبقي الكلي:</strong> <span id="payRemaining" style="color: var(--danger); font-weight:bold;">0</span></div>
-                                <div><strong>القسط الشهري:</strong> <span id="payMonthly">0</span></div>
-                            </div>
-                            
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>المبلغ المدفوع حالياً (بدون 000)</label>
-                                    <input type="number" id="payAmountInput" oninput="calcPaymentDisplay()">
-                                    <div class="amount-display" id="dispPayAmount">القيمة: 0 دينار</div>
-                                    <small class="hint-text" id="dispPayAmountWords">صفر دينار فقط لا غير</small>
-                                </div>
-                                <div class="form-group">
-                                    <label>تاريخ التسديد</label>
-                                    <input type="date" id="payPaymentDate">
-                                </div>
-                                <div class="form-group">
-                                    <label>تاريخ الاستحقاق القادم (بعد هذه الدفعة)</label>
-                                    <input type="date" id="payNextDueDate">
-                                </div>
-                            </div>
-                            <div style="margin-top: 15px;">
-                                <button class="btn btn-primary" onclick="submitPayment()"><i class="fas fa-check-circle"></i> تسجيل الدفعة وإصدار إيصال</button>
-                            </div>
-                        </div>
-                    </div>
-                
-                </section>
+window.calcNewContract=()=>{const pp=toKilo($('newPurchasePrice').value),fp=toKilo($('newFinalPrice').value),init=toKilo($('newInitialPayment')?.value||0),mo=toKilo($('newMonthlyInstallment').value);$('dispNewPurchasePrice').textContent=`القيمة: ${formatMoney(pp)} دينار`;$('dispNewFinalPrice').textContent=`القيمة: ${formatMoney(fp)} دينار`;if($('dispNewInitialPayment'))$('dispNewInitialPayment').textContent=`القيمة: ${formatMoney(init)} دينار`;$('dispNewMonthly').textContent=`القيمة: ${formatMoney(mo)} دينار`;$('summaryTotal').textContent=formatMoney(fp);if($('summaryInitial'))$('summaryInitial').textContent=formatMoney(init);if($('summaryRemainingAfterInitial'))$('summaryRemainingAfterInitial').textContent=formatMoney(Math.max(fp-init,0));$('summaryProfit').textContent=formatMoney(Math.max(fp-pp,0));$('summaryMonths').textContent=mo?Math.ceil(Math.max(fp-init,0)/mo):0};
 
-                <section id="sec-clients" class="hidden">
-                    <div class="card">
-                        <h3 class="section-title">بحث العملاء</h3>
-                        <input type="text" id="generalSearch" placeholder="اكتب اسم الزبون أو المادة..." oninput="renderClientsList()">
-                    </div>
+window.saveNewContract=async()=>{const name=$('newClientName').value.trim(),phone=$('newClientPhone').value.trim(),item=$('newItemType').value.trim(),pp=toKilo($('newPurchasePrice').value),fp=toKilo($('newFinalPrice').value),init=toKilo($('newInitialPayment')?.value||0),mo=toKilo($('newMonthlyInstallment').value),due=$('newFirstDueDate').value;if(!name||!phone||!item||fp<=0||mo<=0||!due){alert('املأ الحقول الأساسية');return}if(init>fp){alert('الدفعة الأولية أكبر من المبلغ الكلي');return}if(allClientsData.some(c=>c.phone===phone)){alert('رقم الهاتف موجود مسبقاً');return}const createdAt=new Date().toISOString();const initReceipt=init>0?receiptId():null;const initPayment=init>0?{amount:init,date:createdAt.slice(0,10),timestamp:Date.now(),receiptId:initReceipt,type:'initial',cumulativePaidAfter:init,remainingAfter:fp-init,finalTotalPrice:fp,monthlyInstallment:mo}:null;const c={id:phone,name,phone,guarantorName:$('newGuarantorName').value.trim(),guarantorPhone:$('newGuarantorPhone').value.trim(),itemType:item,purchasePrice:pp,finalTotalPrice:fp,monthlyInstallment:mo,initialPayment:init,cumulativePaid:init,nextDueDate:due,payments:initPayment?[initPayment]:[],notes:'',status:'active',createdAt,transactionId:`CON-${Date.now()}`};showLoader();try{await setDoc(doc(db,'clients',phone),c);alert(init>0?'تم حفظ العقد وتسجيل الدفعة الأولية':'تم حفظ العقد');await loadAllClients();if(init>0)generateReceipt(c,init,initReceipt,createdAt.slice(0,10),initPayment)}catch(e){alert('خطأ في الحفظ: '+e.message)}hideLoader()};
 
-                    <div class="card">
-                        <h3 class="section-title">قائمة العملاء</h3>
-                        <div style="overflow-x: auto; margin-top: 10px;">
-                            <table id="clientsTable">
-                                <thead>
-                                    <tr>
-                                        <th>الاسم</th>
-                                        <th>الهاتف</th>
-                                        <th>المادة</th>
-                                        <th>الحالة</th>
-                                        <th>المتبقي</th>
-                                        <th>تاريخ الاستحقاق</th>
-                                        <th>إجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="clientsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
+window.loadClientForPayment=()=>{const q=$('paySearchName').value.trim().toLowerCase();const c=allClientsData.find(x=>(x.name||'').toLowerCase()===q)||allClientsData.find(x=>q&&(x.name||'').toLowerCase().includes(q));if(!c){currentActiveClientForPayment=null;$('paymentArea').classList.add('hidden');return}currentActiveClientForPayment=c;$('payClientName').textContent=c.name;$('payTotalDebt').textContent=formatMoney(c.finalTotalPrice);$('payPaid').textContent=formatMoney(c.cumulativePaid);$('payRemaining').textContent=formatMoney((+c.finalTotalPrice||0)-(+c.cumulativePaid||0));$('payMonthly').textContent=formatMoney(c.monthlyInstallment);if(!$('payPaymentDate').value)$('payPaymentDate').value=new Date().toISOString().slice(0,10);$('paymentArea').classList.remove('hidden')};
+window.calcPaymentDisplay=()=>{$('dispPayAmount').textContent=`القيمة: ${formatMoney(toKilo($('payAmountInput').value))} دينار`};
 
-                    <div id="clientFullDetails" class="card hidden">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
-                            <h3 style="margin:0; color: var(--primary);">الملف المالي: <span id="detailName"></span></h3>
-                            <button class="btn btn-danger" onclick="closeClientDetails()"><i class="fas fa-times"></i> إغلاق</button>
-                        </div>
-                        
-                        <div class="form-grid">
-                            <div><strong>رقم الهاتف:</strong> <span id="detailPhone"></span></div>
-                            <div><strong>المادة:</strong> <span id="detailItem"></span></div>
-                            <div><strong>الكفيل:</strong> <span id="detailGuarantor"></span></div>
-                            <div><strong>الاستحقاق القادم:</strong> <span id="detailNextDue"></span></div>
-                            <div><strong>حالة العقد:</strong> <span id="detailStatusBadge"></span>
-                                <button class="btn btn-warning" style="padding:4px 10px;font-size:0.8rem;margin-right:8px;" id="btnToggleStatus" onclick="toggleClientStatus()"></button>
-                            </div>
-                        </div>
-                        
-                        <div style="background: #eef2ff; padding: 15px; border-radius: 8px; margin: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                            <div><small>سعر الشراء</small><br><strong style="font-size:1.2rem;" id="detailPurchase">0</strong></div>
-                            <div><small>السعر بعد القسط</small><br><strong style="font-size:1.2rem;" id="detailTotal">0</strong></div>
-                            <div><small>المسدد الكلي</small><br><strong style="font-size:1.2rem; color:var(--success);" id="detailPaid">0</strong></div>
-                            <div><small>المتبقي الفعلي</small><br><strong style="font-size:1.2rem; color:var(--danger);" id="detailRemaining">0</strong></div>
-                            <div><small>القسط الشهري</small><br><strong style="font-size:1.2rem;" id="detailMonthly">0</strong></div>
-                        </div>
+window.submitPayment=async()=>{const c=currentActiveClientForPayment;if(!c)return;const amount=toKilo($('payAmountInput').value),pd=$('payPaymentDate').value,nd=$('payNextDueDate').value;if(amount<=0||!pd||!nd){alert('أكمل بيانات الدفعة');return}const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);if(amount>rem){alert('المبلغ أكبر من المتبقي');return}const newPaid=(+c.cumulativePaid||0)+amount;const p={amount,date:pd,timestamp:Date.now(),receiptId:receiptId(),cumulativePaidAfter:newPaid,remainingAfter:c.finalTotalPrice-newPaid,finalTotalPrice:c.finalTotalPrice,monthlyInstallment:c.monthlyInstallment};const payments=[...(c.payments||[]),p];showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{payments,cumulativePaid:newPaid,nextDueDate:nd});const updated={...c,payments,cumulativePaid:newPaid,nextDueDate:nd};currentActiveClientForPayment=updated;await loadAllClients();generateReceipt(updated,amount,p.receiptId,pd,p);alert('تم تسجيل الدفعة')}catch(e){alert('خطأ: '+e.message)}hideLoader()};
 
-                        <div style="margin-bottom:20px;">
-                            <label style="font-weight:700;color:var(--primary);"><i class="fas fa-sticky-note"></i> ملاحظة خاصة بالزبون</label>
-                            <textarea id="clientNoteInput" rows="2" placeholder="مثال: يدفع نهاية الشهر، اتصل بالكفيل إذا تأخر..."></textarea>
-                            <button class="btn btn-success" style="margin-top:8px;padding:8px 16px;font-size:0.9rem;" onclick="saveClientNote()"><i class="fas fa-save"></i> حفظ الملاحظة</button>
-                        </div>
-                        <div style="margin-bottom: 20px;">
-                            <button class="btn btn-whatsapp" onclick="sendReminderFromDetails()"><i class="fab fa-whatsapp"></i> إرسال تذكير بالاستحقاق</button>
-                            <button class="btn btn-primary" onclick="printStatement()"><i class="fas fa-print"></i> طباعة كشف حساب</button>
-                            <button class="btn btn-danger" onclick="deleteCurrentClient()"><i class="fas fa-trash"></i> حذف الزبون</button>
-                        </div>
+function renderDashboard(){let overdue=0,today=0,totalRem=0,profit=0,alerts='';const now=new Date();now.setHours(0,0,0,0);allClientsData.forEach(c=>{const rem=Math.max((+c.finalTotalPrice||0)-(+c.cumulativePaid||0),0);totalRem+=rem;profit+=Math.max((+c.finalTotalPrice||0)-(+c.purchasePrice||0),0);if(rem>0&&c.nextDueDate){const d=new Date(c.nextDueDate);d.setHours(0,0,0,0);const diff=Math.ceil((d-now)/86400000);if(diff<0){overdue++;alerts+=alertHTML(c,`متأخر ${Math.abs(diff)} يوم`,'urgent')}else if(diff===0){today++;alerts+=alertHTML(c,'استحقاق اليوم','today')}}});$('dashTotalClients').textContent=allClientsData.length;$('dashOverdue').textContent=overdue;$('dashDueToday').textContent=today;$('dashTotalRemaining').textContent=formatMoney(totalRem)+' د.ع';$('dashTotalProfit').textContent=formatMoney(profit)+' د.ع';$('notificationsContainer').innerHTML=alerts||'<p style="color:#10b981"><i class="fas fa-check-circle"></i> لا توجد استحقاقات قريبة أو متأخرة.</p>'}
+function alertHTML(c,msg,cls){const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);const m=encodeURIComponent(`مرحباً ${c.name}، ${msg}. المتبقي: ${formatMoney(rem)} دينار.`);return `<div class="alert-item ${cls}"><div><strong>${c.name}</strong> <span class="ltr-number">${c.phone}</span><br><small>${msg} — المتبقي ${formatMoney(rem)} د.ع</small></div><a class="btn btn-whatsapp" target="_blank" href="https://wa.me/${phone964(c.phone)}?text=${m}"><i class="fab fa-whatsapp"></i> تذكير</a></div>`}
 
-                        <h4>سجل الدفعات (History)</h4>
-                        <table id="historyTable">
-                            <thead>
-                                <tr>
-                                    <th>التاريخ</th>
-                                    <th>رقم الإيصال</th>
-                                    <th>المبلغ المدفوع (IQD)</th>
-                                    <th>إجراء</th>
-                                    <th>إجراء</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody"></tbody>
-                        </table>
-                    </div>
-                </section>
+window.renderClientsList=()=>{const q=($('generalSearch')?.value||'').toLowerCase();const tb=$('clientsTableBody');if(!tb)return;const arr=allClientsData.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.itemType||'').toLowerCase().includes(q));tb.innerHTML=arr.length?arr.map(c=>{const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0),st=getClientStatus(c);return `<tr><td>${c.name||''}</td><td><span class="ltr-number">${c.phone||''}</span></td><td>${c.itemType||''}</td><td><span class="status-badge ${statusClass[st]}">${statusLabel[st]}</span></td><td style="color:${rem>0?'var(--danger)':'var(--success)'};font-weight:bold">${formatMoney(rem)}</td><td>${rem>0?(c.nextDueDate||'---'):'منتهي'}</td><td><button class="btn btn-primary" style="padding:6px 10px;font-size:.82rem" onclick="viewClientDetails('${c.phone}')">تفاصيل</button></td></tr>`}).join(''):'<tr><td colspan="7" style="text-align:center;color:#666">لا توجد بيانات عملاء.</td></tr>'};
 
+window.viewClientDetails=(phone)=>{const c=allClientsData.find(x=>x.phone===phone||x.id===phone);if(!c)return;currentViewedClient=c;$('detailName').textContent=c.name;$('detailPhone').innerHTML=`<span class="ltr-number">${c.phone}</span>`;$('detailItem').textContent=c.itemType;$('detailGuarantor').textContent=c.guarantorName||'لا يوجد';$('detailNextDue').textContent=c.nextDueDate||'---';const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);$('detailTotal').textContent=formatMoney(c.finalTotalPrice);if($('detailInitialPayment'))$('detailInitialPayment').textContent=formatMoney(c.initialPayment||0);$('detailPaid').textContent=formatMoney(c.cumulativePaid);$('detailRemaining').textContent=formatMoney(rem);$('detailMonthly').textContent=formatMoney(c.monthlyInstallment);const st=getClientStatus(c);$('detailStatusBadge').innerHTML=`<span class="status-badge ${statusClass[st]}">${statusLabel[st]}</span>`;$('btnToggleStatus').style.display=st==='finished'?'none':'';$('btnToggleStatus').textContent=st==='active'?'تحديد كـ متوقف':'تحديد كـ نشط';$('clientNoteInput').value=c.notes||'';const tb=$('historyTableBody');tb.innerHTML=(c.payments||[]).length?[...c.payments].reverse().map((p,ri)=>{const i=c.payments.length-1-ri;return `<tr><td>${p.date||'---'}</td><td style="color:#0284c7;font-weight:800">${p.receiptId||'-'}</td><td>${formatMoney(p.amount)}</td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:.82rem" onclick="deletePayment(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="4" style="text-align:center">لا توجد دفعات</td></tr>';$('clientFullDetails').classList.remove('hidden')};
+window.closeClientDetails=()=>$('clientFullDetails').classList.add('hidden');
 
-                <section id="sec-receiptSearch" class="hidden">
-                    <div class="card">
-                        <h3 class="section-title"><i class="fas fa-receipt"></i> البحث عن الإيصال</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>رقم الإيصال</label>
-                                <input type="text" id="receiptSearchInput" placeholder="مثال: 260424153012123456" oninput="searchReceiptByNumber()">
-                                <span class="hint-text">اكتب رقم الإيصال الرقمي كامل حتى يطلع الوصل المطلوب فقط.</span>
-                            </div>
-                        </div>
-                        <div id="receiptSearchResults" style="margin-top: 15px;"></div>
-                    </div>
-                </section>
+window.toggleClientStatus=async()=>{const c=currentViewedClient;if(!c)return;const st=getClientStatus(c);if(st==='finished')return;const ns=st==='active'?'paused':'active';showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{status:ns});await loadAllClients();viewClientDetails(c.phone)}catch(e){alert('خطأ: '+e.message)}hideLoader()};
+window.saveClientNote=async()=>{const c=currentViewedClient;if(!c)return;showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{notes:$('clientNoteInput').value.trim()});await loadAllClients();alert('تم حفظ الملاحظة')}catch(e){alert('خطأ: '+e.message)}hideLoader()};
+window.deletePayment=async(i)=>{const c=currentViewedClient;if(!c||!c.payments?.[i])return;if(!confirm('حذف هذه الدفعة؟'))return;const payments=[...c.payments];payments.splice(i,1);const paid=payments.reduce((s,p)=>s+(+p.amount||0),0);showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{payments,cumulativePaid:paid});await loadAllClients();viewClientDetails(c.phone);alert('تم حذف الدفعة')}catch(e){alert('خطأ: '+e.message)}hideLoader()};
+window.deleteCurrentClient=async()=>{const c=currentViewedClient;if(!c)return;if(!confirm(`حذف الزبون ${c.name}؟`))return;showLoader();try{await deleteDoc(doc(db,'clients',c.id||c.phone));$('clientFullDetails').classList.add('hidden');await loadAllClients()}catch(e){alert('خطأ: '+e.message)}hideLoader()};
+window.sendReminderFromDetails=()=>{const c=currentViewedClient;if(!c)return;const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);const m=encodeURIComponent(`مرحباً ${c.name}، المتبقي بذمتكم ${formatMoney(rem)} دينار.`);window.open(`https://wa.me/${phone964(c.phone)}?text=${m}`,'_blank')};
 
+window.searchReceiptByNumber=()=>{const q=($('receiptSearchInput').value||'').replace(/\D/g,'');const res=$('receiptSearchResults');if(!q){res.innerHTML='';return}const matches=[];allClientsData.forEach(c=>(c.payments||[]).forEach(p=>{const rid=String(p.receiptId||'').replace(/\D/g,'');if(rid===q)matches.push({client:c,payment:p})}));res.innerHTML=matches.length?matches.map((m,i)=>`<div class="alert-item"><div><strong>${m.payment.receiptId}</strong><br>${m.client.name} — ${formatMoney(m.payment.amount)} د.ع</div><button class="btn btn-primary" onclick="openReceiptMatch(${i})">فتح</button></div>`).join(''):'<div class="alert-item urgent">لا يوجد إيصال بهذا الرقم.</div>';window.receiptMatches=matches};
+window.openReceiptMatch=i=>{const m=window.receiptMatches[i];if(!m)return;generateReceipt(m.client,m.payment.amount,m.payment.receiptId,m.payment.date,m.payment)};
 
-    
-            <section id="sec-overdue" class="hidden">
-                <div class="card">
-                    <h3 class="section-title"><i class="fas fa-user-clock"></i> معالجة المتأخرين عن الدفع</h3>
-                    <p style="color:#666;margin-top:-8px;">تصنيف تلقائي حسب مدة التأخير: أيام / أسبوع / شهر / شهرين.</p>
-                    <div id="overdueManagementList"></div>
-                </div>
-            </section>
+function overdueDays(c){if(!c.nextDueDate)return 0;const n=new Date();n.setHours(0,0,0,0);const d=new Date(c.nextDueDate);d.setHours(0,0,0,0);return Math.max(0,Math.floor((n-d)/86400000))}
+window.renderOverdue=()=>{const list=allClientsData.map(c=>({c,days:overdueDays(c),rem:(+c.finalTotalPrice||0)-(+c.cumulativePaid||0)})).filter(x=>x.days>0&&x.rem>0).sort((a,b)=>b.days-a.days);$('overdueManagementList').innerHTML=list.length?list.map(x=>{const label=x.days>=60?'متأخر شهرين أو أكثر':x.days>=30?'متأخر شهر تقريباً':x.days>=7?'متأخر أكثر من أسبوع':'متأخر أيام قليلة';return `<div class="alert-item ${x.days>=30?'urgent':x.days>=7?'today':''}"><div><strong>${x.c.name}</strong><br>${label} — ${x.days} يوم — المتبقي ${formatMoney(x.rem)} د.ع</div><button class="btn btn-primary" onclick="viewClientDetails('${x.c.phone}')">تفاصيل</button></div>`}).join(''):'<p style="color:#10b981">لا يوجد متأخرون حالياً.</p>'};
 
-            <section id="sec-reports" class="hidden">
-                    <div class="card">
-                        <h3 class="section-title"><i class="fas fa-chart-bar"></i> التقرير الشهري</h3>
-                        <div style="max-width:300px;margin-bottom:20px;">
-                            <label>اختر الشهر</label>
-                            <input type="month" id="reportMonth" onchange="renderReports()">
-                        </div>
-                        <div class="report-grid">
-                            <div class="report-card">
-                                <div class="rep-lbl"><i class="fas fa-money-bill-wave"></i> دخل هذا الشهر</div>
-                                <div class="rep-val" id="repMonthCollections">0</div>
-                            </div>
-                            <div class="report-card" style="background:linear-gradient(135deg,#b45309,#f59e0b);">
-                                <div class="rep-lbl"><i class="fas fa-file-contract"></i> عقود جديدة</div>
-                                <div class="rep-val" id="repNewContracts">0</div>
-                            </div>
-                            <div class="report-card" style="background:linear-gradient(135deg,#059669,#10b981);">
-                                <div class="rep-lbl"><i class="fas fa-chart-line"></i> ربح العقود الجديدة</div>
-                                <div class="rep-val" id="repMonthProfit">0</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3 class="section-title"><i class="fas fa-list"></i> دفعات الشهر</h3>
-                        <div style="overflow-x:auto;">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>الزبون</th>
-                                        <th>المادة</th>
-                                        <th>تاريخ الدفعة</th>
-                                        <th>رقم الإيصال</th>
-                                        <th>المبلغ</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="repPaymentsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
+window.renderReports=()=>{const mv=$('reportMonth').value;if(!mv)return;const [y,m]=mv.split('-').map(Number);let income=0,contracts=0,profit=0,rows=[];allClientsData.forEach(c=>{if(c.createdAt){const d=new Date(c.createdAt);if(d.getFullYear()===y&&d.getMonth()+1===m){contracts++;profit+=Math.max((+c.finalTotalPrice||0)-(+c.purchasePrice||0),0)}};(c.payments||[]).forEach(p=>{const ds=p.date||'';if(ds.startsWith(mv)){income+=(+p.amount||0);rows.push(`<tr><td>${c.name}</td><td>${c.itemType}</td><td>${ds}</td><td>${p.receiptId||'-'}</td><td>${formatMoney(p.amount)} د.ع</td></tr>`)}})});$('repMonthCollections').textContent=formatMoney(income)+' د.ع';$('repNewContracts').textContent=contracts;$('repMonthProfit').textContent=formatMoney(profit)+' د.ع';$('repPaymentsTableBody').innerHTML=rows.join('')||'<tr><td colspan="5" style="text-align:center;color:#666">لا توجد دفعات في هذا الشهر.</td></tr>'};
 
-                <section id="sec-settings" class="hidden">
-                    <div class="card">
-                        <h3 class="section-title"><i class="fas fa-building"></i> إعدادات هوية الشركة</h3>
-                        <p style="color: #666; margin-bottom: 20px;">هذه البيانات ستظهر في جميع الإيصالات والمراسلات وتطبيق النظام.</p>
-                        
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>اسم الشركة / المكتب</label>
-                                <input type="text" id="setCompanyName">
-                            </div>
-                            <div class="form-group">
-                                <label>اسم المدير / المالك</label>
-                                <input type="text" id="setManagerName">
-                            </div>
-                            <div class="form-group">
-                                <label>رقم هاتف المكتب</label>
-                                <input type="text" id="setPhone">
-                            </div>
-                            <div class="form-group">
-                                <label>رقم الواتساب (للتواصل)</label>
-                                <input type="text" id="setWhatsapp">
-                            </div>
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>العنوان</label>
-                                <input type="text" id="setAddress">
-                            </div>
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>ملاحظة أسفل الإيصال</label>
-                                <textarea id="setReceiptNote" rows="3" placeholder="مثال: البضاعة المباعة لا ترد ولا تستبدل، يرجى الالتزام بمواعيد الدفع..."></textarea>
-                            </div>
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>شعار الشركة (اللوجو)</label>
-                                <input type="file" id="setLogoFile" accept="image/*" onchange="previewLogo(event)">
-                                <small class="hint-text">إذا كانت الصورة كبيرة سيتم تصغيرها تلقائياً حتى لا يظهر خطأ في الحفظ.</small>
-                                <div style="margin-top: 10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                                    <img id="logoPreview" src="" alt="شعار الشركة" style="max-height: 100px; display: none; border-radius: 8px; border: 1px solid #ccc; padding: 5px;">
-                                    <button type="button" class="btn btn-danger" onclick="removeLogo()"><i class="fas fa-trash"></i> حذف الشعار</button>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-success" style="margin-top: 20px;" onclick="saveSettings()"><i class="fas fa-save"></i> حفظ الإعدادات</button>
-                    </div>
+window.printClientsList=()=>{const rows=allClientsData.map(c=>{const rem=Math.max((+c.finalTotalPrice||0)-(+c.cumulativePaid||0),0),st=getClientStatus(c);return `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.itemType}</td><td>${statusLabel[st]}</td><td>${formatMoney(c.finalTotalPrice)}</td><td>${formatMoney(c.cumulativePaid)}</td><td>${formatMoney(rem)}</td><td>${rem>0?c.nextDueDate:'منتهي'}</td><td>${c.notes||''}</td></tr>`}).join('');const w=window.open('','_blank');w.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:Tahoma;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:right;font-size:12px}th{background:#1e3a8a;color:#fff}</style></head><body><h2>كشف العملاء</h2><button onclick="window.print()">طباعة</button><table><thead><tr><th>الاسم</th><th>الهاتف</th><th>المادة</th><th>الحالة</th><th>الكلي</th><th>المسدد</th><th>المتبقي</th><th>الاستحقاق</th><th>ملاحظة</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);w.document.close()};
 
-                    <div class="card" style="margin-top: 25px;">
-                        <h3 class="section-title"><i class="fas fa-key"></i> تغيير كلمة المرور</h3>
-                        <p style="color: #666; margin-bottom: 20px;">لحماية الحساب، أدخل كلمة المرور الحالية ثم الجديدة.</p>
+window.generateReceipt=(c,amount=0,rid=null,pd=null,snap=null)=>{Object.values(tabs).forEach(t=>$(t.el).classList.add('hidden'));$('receipt-section').classList.remove('hidden');if(currentCompanySettings.logoUrl){$('recLogo').src=currentCompanySettings.logoUrl;$('recLogo').classList.remove('hidden');$('recLogoText').classList.add('hidden')}else{$('recLogo').classList.add('hidden');$('recLogoText').classList.remove('hidden')}$('recCompanyName').textContent=currentCompanySettings.companyName||'اسم الشركة';$('recManager').textContent=currentCompanySettings.managerName||'المدير';$('recPhone').textContent=currentCompanySettings.phone||'---';$('recAddress').textContent=currentCompanySettings.address||'';$('recDate').textContent=new Date().toLocaleDateString('ar-EG');$('recTxId').textContent=rid||c.transactionId||'---';$('recClientName').textContent=c.name;$('recClientPhone').textContent=c.phone;$('recItem').textContent=c.itemType;const paid=snap?.cumulativePaidAfter??c.cumulativePaid,rem=snap?.remainingAfter??((+c.finalTotalPrice||0)-(+c.cumulativePaid||0));$('recTotalDebt').textContent=formatMoney(c.finalTotalPrice);$('recMonthly').textContent=formatMoney(c.monthlyInstallment);$('recPaid').textContent=formatMoney(paid);$('recRemaining').textContent=formatMoney(rem);$('recNextDue').textContent=c.nextDueDate||'منتهي';$('recCurrentPaymentRow').classList.toggle('hidden',!(amount>0));$('recCurrentPaymentAmount').textContent=formatMoney(amount);$('recPaymentDate').textContent=pd||'---';$('recAmountsWords').textContent=`المتبقي: ${words(rem)}`;$('recNote').textContent=currentCompanySettings.receiptNote||'شكراً لتعاملكم معنا';$('btnShareReceipt').onclick=()=>window.open(`https://wa.me/${phone964(c.phone)}?text=${encodeURIComponent('تم إصدار إيصال رقم '+$('recTxId').textContent)}`,'_blank')};
+window.printStatement=()=>{if(currentViewedClient)generateReceipt(currentViewedClient,0)};
+window.closeReceipt=()=>switchTab('newPayment');
 
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>كلمة المرور الحالية</label>
-                                <input type="password" id="currentPassword" placeholder="أدخل كلمة المرور الحالية">
-                            </div>
+const tabs={dashboard:{el:'sec-dashboard',title:'لوحة الإشعارات',icon:'fa-chart-line'},newContract:{el:'sec-newContract',title:'إضافة عقد',icon:'fa-file-contract'},newPayment:{el:'sec-newPayment',title:'إضافة قسط',icon:'fa-money-bill-wave'},clients:{el:'sec-clients',title:'إدارة العملاء',icon:'fa-users'},receiptSearch:{el:'sec-receiptSearch',title:'بحث الإيصال',icon:'fa-receipt'},overdue:{el:'sec-overdue',title:'معالجة المتأخرين',icon:'fa-user-clock'},reports:{el:'sec-reports',title:'التقارير الشهرية',icon:'fa-chart-bar'},settings:{el:'sec-settings',title:'إعدادات الشركة',icon:'fa-cogs'}};
+window.switchTab=async id=>{Object.values(tabs).forEach(t=>$(t.el).classList.add('hidden'));$('receipt-section').classList.add('hidden');document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));$(tabs[id].el).classList.remove('hidden');$('nav-'+id).classList.add('active');$('currentTabTitle').innerHTML=`<i class="fas ${tabs[id].icon}"></i> ${tabs[id].title}`;if(['dashboard','clients','newPayment','receiptSearch','overdue','reports'].includes(id))await loadAllClients();if(id==='overdue')renderOverdue();if(id==='reports'){const now=new Date(),def=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;if(!$('reportMonth').value)$('reportMonth').value=def;renderReports()}};
 
-                            <div class="form-group">
-                                <label>كلمة المرور الجديدة</label>
-                                <input type="password" id="newPassword" placeholder="أدخل كلمة المرور الجديدة">
-                            </div>
-
-                            <div class="form-group">
-                                <label>تأكيد كلمة المرور الجديدة</label>
-                                <input type="password" id="confirmNewPassword" placeholder="أعد كتابة كلمة المرور الجديدة">
-                            </div>
-                        </div>
-
-                        <button class="btn btn-primary" style="margin-top: 15px;" onclick="changeUserPassword()">
-                            <i class="fas fa-save"></i> تغيير كلمة المرور
-                        </button>
-
-                        <p id="passwordChangeMsg" style="margin-top: 12px; font-size: 0.95rem;"></p>
-                    </div>
-                </section>
-
-                <section id="receipt-section" class="hidden">
-                    <div class="no-print" style="margin-bottom: 15px; text-align: left; max-width: 800px; margin: 0 auto;">
-                        <button class="btn btn-danger" onclick="closeReceipt()"><i class="fas fa-times"></i> إغلاق الإيصال</button>
-                        <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> طباعة (A4)</button>
-                        <button class="btn btn-whatsapp" id="btnShareReceipt"><i class="fab fa-whatsapp"></i> مشاركة للعميل</button>
-                    </div>
-                    
-                    <div id="receipt-container">
-                        <div class="receipt-premium-frame">
-                            <div class="receipt-top">
-                                <div class="receipt-logo-box">
-                                    <img id="recLogo" class="receipt-logo hidden" src="" alt="Logo">
-                                    <span id="recLogoText">شعار الشركة</span>
-                                </div>
-
-                                <div class="receipt-company">
-                                    <h2 id="recCompanyName">اسم الشركة</h2>
-                                    <div class="subtitle">نظام إدارة الأقساط</div>
-                                    <div class="receipt-contact">
-                                        <div>بإدارة: <span id="recManager">---</span></div>
-                                        <div>الهاتف: <span id="recPhone">---</span></div>
-                                        <div>العنوان: <span id="recAddress">---</span></div>
-                                    </div>
-                                </div>
-
-                                <div class="receipt-title-box">
-                                    <h1>إيصال دفع</h1>
-                                    <div class="receipt-id">رقم الإيصال: <span id="recTxId">---</span></div>
-                                </div>
-                            </div>
-
-                            <div class="receipt-mini-row">
-                                <div class="receipt-pill">تاريخ الإصدار: <span id="recDate">---</span></div>
-                                <div class="receipt-pill">تاريخ الاستحقاق القادم: <span id="recNextDue">---</span></div>
-                            </div>
-
-                            <div class="receipt-info-grid">
-                                <div class="receipt-card">
-                                    <div class="receipt-card-title">تفاصيل الزبون</div>
-                                    <div class="receipt-card-body">
-                                        <div class="receipt-field">
-                                            <span class="receipt-label">اسم الزبون</span>
-                                            <span class="receipt-value" id="recClientName">---</span>
-                                        </div>
-                                        <div class="receipt-field">
-                                            <span class="receipt-label">رقم الهاتف</span>
-                                            <span class="receipt-value" id="recClientPhone">---</span>
-                                        </div>
-                                        <div class="receipt-field">
-                                            <span class="receipt-label">المادة</span>
-                                            <span class="receipt-value" id="recItem">---</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <table class="premium-table">
-                                <thead>
-                                    <tr>
-                                        <th>التفاصيل</th>
-                                        <th>القيمة</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>المبلغ الكلي</td>
-                                        <td id="recTotalDebt">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>القسط الشهري</td>
-                                        <td id="recMonthly">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>إجمالي المدفوع سابقاً</td>
-                                        <td id="recPaid">0</td>
-                                    </tr>
-                                    <tr class="row-paid-now" id="recCurrentPaymentRow">
-                                        <td>المبلغ المدفوع الآن</td>
-                                        <td>
-                                            <span id="recCurrentPaymentAmount">0</span>
-                                            <div style="font-size:0.82rem; margin-top:5px;">تاريخ التسديد: <span id="recPaymentDate">---</span></div>
-                                            <div style="font-size:0.82rem; margin-top:4px;" id="recCurrentPaymentWords">صفر دينار فقط لا غير</div>
-                                        </td>
-                                    </tr>
-                                    <tr class="row-remaining">
-                                        <td>المبلغ المتبقي</td>
-                                        <td id="recRemaining">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <div class="receipt-words" id="recAmountsWords">المبلغ كتابة</div>
-
-                            <div class="receipt-note-box" id="recNote">شكراً لتعاملكم معنا.</div>
-
-                            <div class="receipt-sign-row">
-                                <div class="receipt-sign">
-                                    توقيع المسؤول
-                                    <div class="receipt-sign-line"></div>
-                                </div>
-                                <div class="receipt-stamp">ختم الشركة</div>
-                            </div>
-
-                            <div class="receipt-footer">شكراً لتعاملكم معنا</div>
-                        </div>
-                    </div>
-                </section>
-
-            </div>
-        </main>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import {
-            getAuth,
-            signInWithEmailAndPassword,
-            onAuthStateChanged,
-            signOut,
-            EmailAuthProvider,
-            reauthenticateWithCredential,
-            updatePassword
-        } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAYQwmNQaagd4QobK8QGyR7rSMS6HVigWk",
-            authDomain: "ahmed-6706d.firebaseapp.com",
-            projectId: "ahmed-6706d",
-            storageBucket: "ahmed-6706d.firebasestorage.app",
-            messagingSenderId: "244229036057",
-            appId: "1:244229036057:web:ee39dd5f345ef8e615f288",
-            measurementId: "G-DTW13SMBVD"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        
-        const LOCAL_SETTINGS_KEY = 'installment_settings_cache_v1';
-        const LOCAL_CLIENTS_KEY = 'installment_clients_cache_v1';
-        const LOCAL_PENDING_KEY = 'installment_pending_ops_v1';
-
-let currentCompanySettings = {};
-        let allClientsData = [];
-        let logoBase64 = "";
-        let currentActiveClientForPayment = null;
-        let currentViewedClient = null;
-
-        const formatMoney = (num) => (parseFloat(num) || 0).toLocaleString('en-US');
-        const toKilo = (value) => (parseFloat(value) || 0) * 1000;
-        const escapeAttr = (str = '') => String(str).replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const showLoader = () => document.getElementById('loader').classList.remove('hidden');
-        const hideLoader = () => document.getElementById('loader').classList.add('hidden');
-        const convertToInternationalPhone = (phone) => {
-            let p = (phone || '').trim();
-            if (p.startsWith('07')) return '964' + p.substring(1);
-            return p;
-        };
-
-        const numberToArabicWords = (num) => {
-            num = Math.floor(parseFloat(num) || 0);
-            if (num === 0) return 'صفر دينار فقط لا غير';
-            const ones = ['', 'واحد', 'اثنان', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة'];
-            const tens = ['', 'عشرة', 'عشرون', 'ثلاثون', 'أربعون', 'خمسون', 'ستون', 'سبعون', 'ثمانون', 'تسعون'];
-            const teens = ['عشرة', 'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر'];
-            const hundreds = ['', 'مئة', 'مئتان', 'ثلاثمئة', 'أربعمئة', 'خمسمئة', 'ستمئة', 'سبعمئة', 'ثمانمئة', 'تسعمئة'];
-            const under1000 = (n) => {
-                let parts = [];
-                const h = Math.floor(n / 100);
-                const rem = n % 100;
-                if (h) parts.push(hundreds[h]);
-                if (rem) {
-                    if (rem < 10) parts.push(ones[rem]);
-                    else if (rem < 20) parts.push(teens[rem - 10]);
-                    else {
-                        const t = Math.floor(rem / 10);
-                        const o = rem % 10;
-                        if (o) parts.push(`${ones[o]} و${tens[t]}`);
-                        else parts.push(tens[t]);
-                    }
-                }
-                return parts.join(' و');
-            };
-            const scaleNames = [
-                ['', '', ''],
-                ['ألف', 'ألفان', 'آلاف'],
-                ['مليون', 'مليونان', 'ملايين'],
-                ['مليار', 'ملياران', 'مليارات']
-            ];
-            let groups = [];
-            while (num > 0) {
-                groups.push(num % 1000);
-                num = Math.floor(num / 1000);
-            }
-            let parts = [];
-            for (let i = groups.length - 1; i >= 0; i--) {
-                const g = groups[i];
-                if (!g) continue;
-                if (i === 0) {
-                    parts.push(under1000(g));
-                } else {
-                    const [singular, dual, plural] = scaleNames[i];
-                    if (g === 1) parts.push(singular);
-                    else if (g === 2) parts.push(dual);
-                    else if (g >= 3 && g <= 10) parts.push(`${under1000(g)} ${plural}`);
-                    else parts.push(`${under1000(g)} ${singular}`);
-                }
-            }
-            return `${parts.join(' و')} دينار فقط لا غير`;
-        };
-
-        const setAmountText = (amount, displayId, wordsId) => {
-            const value = parseFloat(amount) || 0;
-            if (displayId) document.getElementById(displayId).textContent = `القيمة: ${formatMoney(value)} دينار`;
-            if (wordsId) document.getElementById(wordsId).textContent = numberToArabicWords(value);
-        };
-
-        const compressImageToDataUrl = (file, maxWidth = 500, quality = 0.72) => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = new Image();
-                img.onload = () => {
-                    let { width, height } = img;
-                    if (width > maxWidth) {
-                        height = Math.round((height * maxWidth) / width);
-                        width = maxWidth;
-                    }
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, width, height);
-                    ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', quality));
-                };
-                img.onerror = reject;
-                img.src = reader.result;
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-
-
-        const isOnline = () => navigator.onLine;
-        const readLocalJson = (key, fallback) => {
-            try {
-                const raw = localStorage.getItem(key);
-                return raw ? JSON.parse(raw) : fallback;
-            } catch (e) {
-                return fallback;
-            }
-        };
-        const writeLocalJson = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-        const getPendingOperations = () => readLocalJson(LOCAL_PENDING_KEY, []);
-        const setPendingOperations = (ops) => {
-            writeLocalJson(LOCAL_PENDING_KEY, ops);
-            updateSyncStatusUI();
-        };
-        const queuePendingOperation = (op) => {
-            const ops = getPendingOperations();
-            ops.push({ id: `PEND-${Date.now()}-${Math.random().toString(36).slice(2,8)}`, createdAt: new Date().toISOString(), ...op });
-            setPendingOperations(ops);
-        };
-        const cacheClientsLocally = (clients) => writeLocalJson(LOCAL_CLIENTS_KEY, clients);
-        const loadCachedClients = () => {
-            allClientsData = readLocalJson(LOCAL_CLIENTS_KEY, []);
-            renderDashboard();
-            renderClientsList();
-            populateClientNamesList();
-        };
-        const cacheSettingsLocally = (settings) => writeLocalJson(LOCAL_SETTINGS_KEY, settings || {});
-        const applySettingsToUi = () => {
-            document.getElementById('setCompanyName').value = currentCompanySettings.companyName || '';
-            document.getElementById('setManagerName').value = currentCompanySettings.managerName || '';
-            document.getElementById('setPhone').value = currentCompanySettings.phone || '';
-            document.getElementById('setWhatsapp').value = currentCompanySettings.whatsapp || '';
-            document.getElementById('setAddress').value = currentCompanySettings.address || '';
-            document.getElementById('setReceiptNote').value = currentCompanySettings.receiptNote || '';
-            if (currentCompanySettings.logoUrl) {
-                logoBase64 = currentCompanySettings.logoUrl;
-                document.getElementById('logoPreview').src = logoBase64;
-                document.getElementById('logoPreview').style.display = 'block';
-            } else {
-                logoBase64 = '';
-                document.getElementById('logoPreview').src = '';
-                document.getElementById('logoPreview').style.display = 'none';
-            }
-            document.getElementById('sidebarCompanyName').textContent = currentCompanySettings.companyName || 'النظام الإداري';
-            document.getElementById('topBarManagerName').textContent = currentCompanySettings.managerName || 'المدير';
-        };
-        const findClientIndexById = (clientId) => allClientsData.findIndex(c => c.id === clientId);
-        const updateClientInLocalCache = (clientId, updater) => {
-            const index = findClientIndexById(clientId);
-            if (index === -1) return null;
-            const updated = typeof updater === 'function' ? updater(structuredClone(allClientsData[index])) : updater;
-            allClientsData[index] = updated;
-            cacheClientsLocally(allClientsData);
-            renderDashboard();
-            renderClientsList();
-            populateClientNamesList();
-            return updated;
-        };
-        const addClientToLocalCache = (client) => {
-            allClientsData.push(client);
-            cacheClientsLocally(allClientsData);
-            renderDashboard();
-            renderClientsList();
-            populateClientNamesList();
-        };
-        const removeClientFromLocalCache = (clientId) => {
-            allClientsData = allClientsData.filter(c => c.id !== clientId);
-            cacheClientsLocally(allClientsData);
-            renderDashboard();
-            renderClientsList();
-            populateClientNamesList();
-        };
-        const updateSyncStatusUI = () => {
-            const online = isOnline();
-            const pending = getPendingOperations().length;
-            const textEl = document.getElementById('netStatusText');
-            const iconEl = document.getElementById('netStatusIcon');
-            const badgeEl = document.getElementById('pendingOpsBadge');
-            if (textEl) {
-                textEl.textContent = online ? 'متصل بالإنترنت' : 'وضع أوفلاين';
-            }
-            if (iconEl) {
-                iconEl.className = online ? 'fas fa-wifi' : 'fas fa-wifi-slash';
-            }
-            if (badgeEl) {
-                badgeEl.textContent = `عمليات معلقة: ${pending}`;
-                badgeEl.style.color = pending ? '#b45309' : '#1d4ed8';
-                badgeEl.style.borderColor = pending ? '#fcd34d' : '#bfdbfe';
-                badgeEl.style.background = pending ? '#fffbeb' : '#fff';
-            }
-        };
-
-        window.syncPendingOperations = async () => {
-            if (!isOnline()) {
-                alert('لا يوجد اتصال بالإنترنت حالياً.');
-                return;
-            }
-            let pending = getPendingOperations();
-            if (!pending.length) {
-                updateSyncStatusUI();
-                alert('لا توجد عمليات معلقة.');
-                return;
-            }
-            showLoader();
-            const remaining = [];
-            try {
-                for (const op of pending) {
-                    try {
-                        if (op.type === 'save_settings') {
-                            await setDoc(doc(db, 'settings', 'business_info'), op.data);
-                        } else if (op.type === 'add_client') {
-                            await setDoc(doc(db, 'clients', op.client.id), op.client);
-                        } else if (op.type === 'add_payment') {
-                            await updateDoc(doc(db, 'clients', op.clientId), {
-                                cumulativePaid: op.updatedPaid,
-                                nextDueDate: op.nextDueDate,
-                                payments: op.updatedPayments
-                            });
-                        } else if (op.type === 'delete_payment') {
-                            await updateDoc(doc(db, 'clients', op.clientId), {
-                                payments: op.updatedPayments,
-                                cumulativePaid: op.updatedPaid
-                            });
-                        } else if (op.type === 'delete_client') {
-                            await deleteDoc(doc(db, 'clients', op.clientId));
-                        }
-                    } catch (err) {
-                        remaining.push(op);
-                    }
-                }
-                setPendingOperations(remaining);
-                await loadSettings();
-                await loadAllClients();
-                updateSyncStatusUI();
-                alert(remaining.length ? 'تمت مزامنة جزء من العمليات وبقي بعضها معلقاً.' : 'تمت مزامنة كل العمليات.');
-            } finally {
-                hideLoader();
-            }
-        };
-
-        window.addEventListener('online', () => {
-            updateSyncStatusUI();
-            if (getPendingOperations().length) window.syncPendingOperations();
-        });
-        window.addEventListener('offline', updateSyncStatusUI);
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-screen').style.display = 'flex';
-                await loadSettings();
-                await loadAllClients();
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('app-screen').style.display = 'none';
-            }
-        });
-
-        window.handleLogin = async () => {
-            const email = document.getElementById('loginEmail').value.trim();
-            const pass = document.getElementById('loginPassword').value;
-            const err = document.getElementById('loginError');
-            if (!email || !pass) return;
-            showLoader();
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                err.style.display = 'none';
-                err.textContent = '';
-            } catch (error) {
-                err.textContent = 'خطأ في تسجيل الدخول. تأكد من البريد وكلمة المرور.';
-                err.style.display = 'block';
-            }
-            hideLoader();
-        };
-
-        window.handleLogout = async () => {
-            if (confirm('هل تريد تسجيل الخروج؟')) {
-                await signOut(auth);
-            }
-        };
-
-        window.changeUserPassword = async () => {
-            const currentPass = document.getElementById('currentPassword').value.trim();
-            const newPass = document.getElementById('newPassword').value.trim();
-            const confirmPass = document.getElementById('confirmNewPassword').value.trim();
-            const msg = document.getElementById('passwordChangeMsg');
-
-            msg.textContent = '';
-            msg.style.color = 'red';
-
-            if (!currentPass || !newPass || !confirmPass) {
-                msg.textContent = 'يرجى ملء جميع الحقول.';
-                return;
-            }
-
-            if (newPass.length < 6) {
-                msg.textContent = 'كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل.';
-                return;
-            }
-
-            if (newPass !== confirmPass) {
-                msg.textContent = 'كلمة المرور الجديدة وتأكيدها غير متطابقين.';
-                return;
-            }
-
-            const user = auth.currentUser;
-            if (!user || !user.email) {
-                msg.textContent = 'لا يوجد مستخدم مسجل حالياً.';
-                return;
-            }
-
-            showLoader();
-            try {
-                const credential = EmailAuthProvider.credential(user.email, currentPass);
-                await reauthenticateWithCredential(user, credential);
-                await updatePassword(user, newPass);
-
-                msg.style.color = 'green';
-                msg.textContent = 'تم تغيير كلمة المرور بنجاح.';
-
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmNewPassword').value = '';
-            } catch (error) {
-                console.error(error);
-                if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                    msg.textContent = 'كلمة المرور الحالية غير صحيحة.';
-                } else if (error.code === 'auth/too-many-requests') {
-                    msg.textContent = 'تمت محاولات كثيرة. حاول مرة أخرى لاحقاً.';
-                } else if (error.code === 'auth/weak-password') {
-                    msg.textContent = 'كلمة المرور الجديدة ضعيفة جداً.';
-                } else if (error.code === 'auth/requires-recent-login') {
-                    msg.textContent = 'يرجى تسجيل الدخول من جديد ثم إعادة المحاولة.';
-                } else {
-                    msg.textContent = 'حدث خطأ أثناء تغيير كلمة المرور.';
-                }
-            }
-            hideLoader();
-        };
-
-        async function loadSettings() {
-            try {
-                if (isOnline()) {
-                    const docRef = doc(db, 'settings', 'business_info');
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        currentCompanySettings = docSnap.data();
-                        cacheSettingsLocally(currentCompanySettings);
-                    } else {
-                        currentCompanySettings = readLocalJson(LOCAL_SETTINGS_KEY, {});
-                    }
-                } else {
-                    currentCompanySettings = readLocalJson(LOCAL_SETTINGS_KEY, {});
-                }
-                applySettingsToUi();
-                updateSyncStatusUI();
-            } catch (error) {
-                currentCompanySettings = readLocalJson(LOCAL_SETTINGS_KEY, {});
-                applySettingsToUi();
-                console.error('Error loading settings:', error);
-            }
-        }
-
-        window.previewLogo = async (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-            try {
-                logoBase64 = await compressImageToDataUrl(file);
-                document.getElementById('logoPreview').src = logoBase64;
-                document.getElementById('logoPreview').style.display = 'block';
-            } catch (error) {
-                alert('تعذر تجهيز الصورة، حاول بصورة أخرى.');
-            }
-        };
-
-        window.removeLogo = () => {
-            logoBase64 = '';
-            document.getElementById('setLogoFile').value = '';
-            document.getElementById('logoPreview').src = '';
-            document.getElementById('logoPreview').style.display = 'none';
-        };
-
-        window.saveSettings = async () => {
-            showLoader();
-            const data = {
-                companyName: document.getElementById('setCompanyName').value.trim(),
-                managerName: document.getElementById('setManagerName').value.trim(),
-                phone: document.getElementById('setPhone').value.trim(),
-                whatsapp: document.getElementById('setWhatsapp').value.trim(),
-                address: document.getElementById('setAddress').value.trim(),
-                receiptNote: document.getElementById('setReceiptNote').value.trim(),
-                logoUrl: logoBase64 || ''
-            };
-            try {
-                if (data.logoUrl.length > 95000) throw new Error('حجم الشعار كبير جداً. اختر صورة أصغر.');
-                currentCompanySettings = data;
-                cacheSettingsLocally(data);
-                applySettingsToUi();
-                if (isOnline()) {
-                    await setDoc(doc(db, 'settings', 'business_info'), data);
-                    alert('تم حفظ الإعدادات.');
-                } else {
-                    queuePendingOperation({ type: 'save_settings', data });
-                    alert('تم حفظ الإعدادات محلياً وسيتم رفعها عند رجوع النت.');
-                }
-            } catch (error) {
-                alert('تعذر الحفظ: ' + error.message);
-            } finally {
-                hideLoader();
-            }
-        };
-
-        async function loadAllClients() {
-            try {
-                if (isOnline()) {
-                    const querySnapshot = await getDocs(collection(db, 'clients'));
-                    allClientsData = [];
-                    querySnapshot.forEach((clientDoc) => {
-                        allClientsData.push({ id: clientDoc.id, ...clientDoc.data() });
-                    });
-                    cacheClientsLocally(allClientsData);
-                } else {
-                    allClientsData = readLocalJson(LOCAL_CLIENTS_KEY, []);
-                }
-            } catch (error) {
-                console.error('Error loading clients:', error);
-                allClientsData = readLocalJson(LOCAL_CLIENTS_KEY, []);
-            }
-            renderDashboard();
-            renderClientsList();
-            populateClientNamesList();
-            updateSyncStatusUI();
-        }
-
-        window.calcNewContract = () => {
-            const purchasePrice = toKilo(document.getElementById('newPurchasePrice')?.value || 0);
-            const finalPrice = toKilo(document.getElementById('newFinalPrice').value);
-            const monthly = toKilo(document.getElementById('newMonthlyInstallment').value);
-
-            const purchaseEl = document.getElementById('dispNewPurchasePrice');
-            if (purchaseEl) purchaseEl.textContent = `القيمة: ${formatMoney(purchasePrice)} دينار`;
-
-            document.getElementById('dispNewFinalPrice').textContent = `القيمة: ${formatMoney(finalPrice)} دينار`;
-            document.getElementById('dispNewMonthly').textContent = `القيمة: ${formatMoney(monthly)} دينار`;
-
-            document.getElementById('summaryTotal').textContent = formatMoney(finalPrice);
-            document.getElementById('summaryMonths').textContent = monthly > 0 ? Math.ceil(finalPrice / monthly) : 0;
-        };
-
-        window.saveNewContract = async () => {
-            const name = document.getElementById('newClientName').value.trim();
-            const phone = document.getElementById('newClientPhone').value.trim();
-            const item = document.getElementById('newItemType').value.trim();
-            const purchasePrice = toKilo(document.getElementById('newPurchasePrice').value);
-            const finalPrice = toKilo(document.getElementById('newFinalPrice').value);
-            const monthly = toKilo(document.getElementById('newMonthlyInstallment').value);
-            const firstDue = document.getElementById('newFirstDueDate').value;
-
-            if (!name || !phone || !item || finalPrice <= 0 || monthly <= 0 || !firstDue) {
-                alert('يرجى ملء الحقول الأساسية.');
-                return;
-            }
-
-            if (allClientsData.find(c => c.phone === phone)) {
-                alert('رقم الهاتف مسجل مسبقاً.');
-                return;
-            }
-
-            showLoader();
-            try {
-                const newClient = {
-                    id: phone,
-                    name,
-                    phone,
-                    guarantorName: document.getElementById('newGuarantorName').value.trim(),
-                    guarantorPhone: document.getElementById('newGuarantorPhone').value.trim(),
-                    itemType: item,
-                purchasePrice: purchasePrice,
-                    purchasePrice,
-                    finalTotalPrice: finalPrice,
-                    monthlyInstallment: monthly,
-                    cumulativePaid: 0,
-                    nextDueDate: firstDue,
-                    payments: [],
-                notes: '',
-                status: 'active',
-                    createdAt: new Date().toISOString(),
-                    transactionId: `TXN-${Date.now().toString().slice(-6)}`
-                };
-
-                if (isOnline()) {
-                    await setDoc(doc(db, 'clients', phone), newClient);
-                    alert('تمت إضافة الزبون بنجاح');
-                } else {
-                    queuePendingOperation({ type: 'add_client', client: newClient });
-                    alert('تمت إضافة الزبون محلياً وسيتم رفعه عند رجوع النت.');
-                }
-
-                addClientToLocalCache(newClient);
-                document.querySelectorAll('#sec-manager input').forEach(inpt => {
-                    if (inpt.type !== 'password') inpt.value = '';
-                });
-                calcNewContract();
-            } catch (e) {
-                console.error(e);
-                alert('خطأ في الحفظ: ' + e.message);
-            } finally {
-                hideLoader();
-            }
-        };
-
-        window.loadClientForPayment = () => {
-            const nameSearch = document.getElementById('paySearchName').value.trim().toLowerCase();
-            const client = allClientsData.find(c => (c.name || '').toLowerCase() === nameSearch) ||
-                           allClientsData.find(c => nameSearch && (c.name || '').toLowerCase().includes(nameSearch));
-            const area = document.getElementById('paymentArea');
-
-            if (client) {
-                currentActiveClientForPayment = client;
-                document.getElementById('payClientName').textContent = client.name;
-                document.getElementById('payPurchase').textContent = formatMoney(client.purchasePrice || 0);
-                document.getElementById('payTotalDebt').textContent = formatMoney(client.finalTotalPrice);
-                document.getElementById('payPaid').textContent = formatMoney(client.cumulativePaid);
-                const remaining = client.finalTotalPrice - client.cumulativePaid;
-                document.getElementById('payRemaining').textContent = formatMoney(remaining);
-                document.getElementById('payMonthly').textContent = formatMoney(client.monthlyInstallment);
-                const paymentDateInput = document.getElementById('payPaymentDate');
-                if (paymentDateInput && !paymentDateInput.value) {
-                    paymentDateInput.value = new Date().toISOString().slice(0, 10);
-                }
-                area.classList.remove('hidden');
-            } else {
-                currentActiveClientForPayment = null;
-                area.classList.add('hidden');
-            }
-        };
-
-        window.calcPaymentDisplay = () => {
-            const amount = toKilo(document.getElementById('payAmountInput').value);
-            setAmountText(amount, 'dispPayAmount', 'dispPayAmountWords');
-        };
-
-        window.submitPayment = async () => {
-            if (!currentActiveClientForPayment) return;
-            const client = currentActiveClientForPayment;
-            const payAmount = toKilo(document.getElementById('payAmountInput').value);
-            const paymentDate = document.getElementById('payPaymentDate').value;
-            const nextDue = document.getElementById('payNextDueDate').value;
-
-            if (payAmount <= 0) {
-                alert('أدخل مبلغ صحيح');
-                return;
-            }
-            if (!paymentDate) {
-                alert('يرجى تحديد تاريخ التسديد');
-                return;
-            }
-            if (!nextDue) {
-                alert('يرجى تحديد تاريخ الاستحقاق القادم');
-                return;
-            }
-
-            const remaining = client.finalTotalPrice - client.cumulativePaid;
-            if (payAmount > remaining) {
-                alert('المبلغ المدفوع أكبر من المتبقي الكلي!');
-                return;
-            }
-
-            showLoader();
-            try {
-                const newPayment = {
-                    amount: payAmount,
-                    date: paymentDate,
-                    timestamp: Date.now()
-                };
-                const updatedPayments = [...(client.payments || []), newPayment];
-                const updatedPaid = (parseFloat(client.cumulativePaid) || 0) + payAmount;
-
-                if (isOnline()) {
-                    await updateDoc(doc(db, 'clients', client.phone), {
-                        cumulativePaid: updatedPaid,
-                        nextDueDate: nextDue,
-                        payments: updatedPayments
-                    });
-                    alert('تم تسجيل الدفعة بنجاح');
-                } else {
-                    queuePendingOperation({
-                        type: 'add_payment',
-                        clientId: client.id || client.phone,
-                        updatedPaid,
-                        nextDueDate: nextDue,
-                        updatedPayments
-                    });
-                    alert('تم حفظ الدفعة محلياً وسيتم رفعها عند رجوع النت.');
-                }
-
-                const updatedClient = updateClientInLocalCache(client.id || client.phone, old => ({
-                    ...old,
-                    cumulativePaid: updatedPaid,
-                    nextDueDate: nextDue,
-                    payments: updatedPayments
-                })) || { ...client, cumulativePaid: updatedPaid, nextDueDate: nextDue, payments: updatedPayments };
-
-                currentActiveClientForPayment = updatedClient;
-                document.getElementById('payAmountInput').value = '';
-                calcPaymentDisplay();
-                document.getElementById('payPaymentDate').value = '';
-                document.getElementById('payNextDueDate').value = '';
-                loadClientForPayment();
-                generateReceipt(updatedClient, payAmount);
-            } catch (e) {
-                alert('خطأ: ' + e.message);
-            } finally {
-                hideLoader();
-            }
-        };
-
-        function populateClientNamesList() {
-            const list = document.getElementById('clientNamesList');
-            if (!list) return;
-            list.innerHTML = allClientsData
-                .map(client => `<option value="${escapeAttr(client.name || '')}"></option>`)
-                .join('');
-        }
-
-        function renderDashboard() {
-            const totalClientsEl = document.getElementById('dashTotalClients');
-            const overdueEl = document.getElementById('dashOverdue');
-            const dueTodayEl = document.getElementById('dashDueToday');
-            const totalReceivableEl = document.getElementById('dashTotalReceivable');
-            const totalProfitEl = document.getElementById('dashTotalProfit');
-
-            if (totalClientsEl) totalClientsEl.textContent = allClientsData.length;
-
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            let overdueCount = 0;
-            let dueTodayCount = 0;
-            let totalReceivable = 0;
-            let totalProfit = 0;
-            let alertsHtml = '';
-
-            allClientsData.forEach(client => {
-                const finalPrice = Number(client.finalTotalPrice || 0);
-                const paid = Number(client.cumulativePaid || 0);
-                const purchasePrice = Number(client.purchasePrice || 0);
-                const remaining = Math.max(finalPrice - paid, 0);
-
-                totalReceivable += remaining;
-                if (purchasePrice > 0 && finalPrice > 0) {
-                    totalProfit += Math.max(finalPrice - purchasePrice, 0);
-                }
-
-                if (remaining <= 0 || !client.nextDueDate) return;
-
-                const dueDate = new Date(client.nextDueDate);
-                if (isNaN(dueDate.getTime())) return;
-                dueDate.setHours(0,0,0,0);
-
-                const diffTime = dueDate - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                if (diffDays < 0) {
-                    overdueCount++;
-                    alertsHtml += createAlertHTML(client, 'متأخر عن الدفع', diffDays, 'urgent');
-                } else if (diffDays === 0) {
-                    dueTodayCount++;
-                    alertsHtml += createAlertHTML(client, 'استحقاق اليوم', diffDays, 'today');
-                } else if (diffDays > 0 && diffDays <= 3) {
-                    alertsHtml += createAlertHTML(client, `استحقاق بعد ${diffDays} أيام`, diffDays, '');
-                }
-            });
-
-            if (overdueEl) overdueEl.textContent = overdueCount;
-            if (dueTodayEl) dueTodayEl.textContent = dueTodayCount;
-            if (totalReceivableEl) totalReceivableEl.textContent = formatMoney(totalReceivable) + ' د.ع';
-            if (totalProfitEl) totalProfitEl.textContent = formatMoney(totalProfit) + ' د.ع';
-
-            const container = document.getElementById('notificationsContainer');
-            if (!container) return;
-
-            container.innerHTML = alertsHtml || '<p style="color: #10b981;"><i class="fas fa-check-circle"></i> لا توجد استحقاقات قريبة أو متأخرة.</p>';
-        }
-
-        function createAlertHTML(client, msgText, className) {
-            const phoneInt = convertToInternationalPhone(client.phone);
-            const remaining = client.finalTotalPrice - client.cumulativePaid;
-            const waMsg = encodeURIComponent(`مرحباً ${client.name}، نود تذكيرك بموعد القسط الشهري (${formatMoney(client.monthlyInstallment)} دينار). المتبقي الكلي لذمتك: ${formatMoney(remaining)} دينار. يرجى الالتزام بالموعد لتجنب الإحراج. شكراً لتعاونكم.`);
-            return `
-                <div class="alert-item ${className}">
-                    <div>
-                        <strong>${client.name}</strong> (<span class="ltr-number">${client.phone}</span>)<br>
-                        <span style="font-size: 0.85rem; color: #666;">${msgText} - القسط: ${formatMoney(client.monthlyInstallment)} د.ع</span>
-                    </div>
-                    <div>
-                        <a href="https://wa.me/${phoneInt}?text=${waMsg}" target="_blank" class="btn btn-whatsapp" style="padding: 6px 10px; font-size: 0.85rem;">
-                            <i class="fab fa-whatsapp"></i> تذكير
-                        </a>
-                    </div>
-                </div>
-            `;
-        }
-
-        
-window.renderClientsList = () => {
-            const search = (document.getElementById('generalSearch')?.value || '').toLowerCase();
-            const tbody = document.getElementById('clientsTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            const filtered = allClientsData.filter(c =>
-                (c.name || '').toLowerCase().includes(search) ||
-                (c.phone || '').includes(search) ||
-                (c.itemType || '').toLowerCase().includes(search)
-            );
-
-            filtered.forEach(client => {
-                const remaining = (parseFloat(client.finalTotalPrice) || 0) - (parseFloat(client.cumulativePaid) || 0);
-                const st = getClientStatus(client);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${client.name || ''}</td>
-                    <td dir="ltr" style="text-align: right;">${client.phone || ''}</td>
-                    <td>${client.itemType || ''}</td>
-                    <td><span class="status-badge ${statusClass[st]}">${statusLabel[st]}</span></td>
-                    <td style="color: ${remaining > 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">${formatMoney(remaining)}</td>
-                    <td>${remaining > 0 ? (client.nextDueDate || '---') : 'منتهي'}</td>
-                    <td>
-                        <button class="btn btn-primary" style="padding: 5px 10px; font-size:0.8rem;" onclick="viewClientDetails('${client.phone}')">تفاصيل</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        };
-
-        window.viewClientDetailsById = (clientId) => {
-            const client = allClientsData.find(c => c.id === clientId);
-            if (!client) return;
-
-            document.getElementById('detailName').textContent = client.name;
-            document.getElementById('detailPhone').innerHTML = `<span class="ltr-number">${client.phone}</span>`;
-            document.getElementById('detailItem').textContent = client.itemType;
-            document.getElementById('detailGuarantor').textContent = client.guarantorName || 'لا يوجد';
-            document.getElementById('detailNextDue').textContent = client.nextDueDate;
-
-            const remaining = client.finalTotalPrice - client.cumulativePaid;
-            document.getElementById('detailPurchase').textContent = formatMoney(client.purchasePrice || 0);
-            document.getElementById('detailTotal').textContent = formatMoney(client.finalTotalPrice);
-            document.getElementById('detailPaid').textContent = formatMoney(client.cumulativePaid);
-            document.getElementById('detailRemaining').textContent = formatMoney(remaining);
-            document.getElementById('detailMonthly').textContent = formatMoney(client.monthlyInstallment);
-
-            const tbody = document.getElementById('historyTableBody');
-            tbody.innerHTML = '';
-            if (client.payments && client.payments.length > 0) {
-                [...client.payments].reverse().forEach((p, reversedIndex) => {
-                    const originalIndex = client.payments.length - 1 - reversedIndex;
-                    tbody.innerHTML += `<tr><td>${p.date}</td><td>${formatMoney(p.amount)}</td><td><button class="btn btn-danger" style="padding:6px 10px; font-size:0.8rem;" onclick="deletePayment(${originalIndex})"><i class="fas fa-trash"></i> حذف</button></td></tr>`;
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد دفعات مسجلة.</td></tr>';
-            }
-
-            currentViewedClient = client;
-            window.currentViewedClient = client;
-            document.getElementById('clientFullDetails').classList.remove('hidden');
-        };
-
-        window.deletePayment = async (paymentIndex) => {
-            if (!currentViewedClient) return;
-            const payment = currentViewedClient.payments?.[paymentIndex];
-            if (!payment) return;
-            if (!confirm('هل تريد حذف هذه الدفعة؟ سيتم تعديل الرصيد تلقائياً.')) return;
-            showLoader();
-            try {
-                const updatedPayments = [...(currentViewedClient.payments || [])];
-                updatedPayments.splice(paymentIndex, 1);
-                const updatedPaid = updatedPayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
-
-                if (isOnline()) {
-                    await updateDoc(doc(db, 'clients', currentViewedClient.id), {
-                        payments: updatedPayments,
-                        cumulativePaid: updatedPaid
-                    });
-                    alert('تم حذف الدفعة.');
-                } else {
-                    queuePendingOperation({
-                        type: 'delete_payment',
-                        clientId: currentViewedClient.id,
-                        updatedPayments,
-                        updatedPaid
-                    });
-                    alert('تم حذف الدفعة محلياً وسيتم رفع التعديل عند رجوع النت.');
-                }
-
-                const refreshed = updateClientInLocalCache(currentViewedClient.id, old => ({
-                    ...old,
-                    payments: updatedPayments,
-                    cumulativePaid: updatedPaid
-                }));
-                if (refreshed) {
-                    currentViewedClient = refreshed;
-                    viewClientDetailsById(refreshed.id);
-                }
-            } catch (error) {
-                alert('تعذر حذف الدفعة: ' + error.message);
-            } finally {
-                hideLoader();
-            }
-        };
-
-        window.deleteCurrentClient = async () => {
-            if (!currentViewedClient) return;
-            if (!confirm(`هل تريد حذف الزبون ${currentViewedClient.name} نهائياً؟`)) return;
-            showLoader();
-            try {
-                if (isOnline()) {
-                    await deleteDoc(doc(db, 'clients', currentViewedClient.id));
-                    alert('تم حذف الزبون.');
-                } else {
-                    queuePendingOperation({ type: 'delete_client', clientId: currentViewedClient.id });
-                    alert('تم حذف الزبون محلياً وسيتم رفع الحذف عند رجوع النت.');
-                }
-                removeClientFromLocalCache(currentViewedClient.id);
-                currentViewedClient = null;
-                document.getElementById('clientFullDetails').classList.add('hidden');
-            } catch (error) {
-                alert('تعذر حذف الزبون: ' + error.message);
-            } finally {
-                hideLoader();
-            }
-        };
-
-        window.closeClientDetails = () => {
-            document.getElementById('clientFullDetails').classList.add('hidden');
-        };
-
-        window.sendReminderFromDetails = () => {
-            if (!currentViewedClient) return;
-            const c = currentViewedClient;
-            const remaining = c.finalTotalPrice - c.cumulativePaid;
-            const phoneInt = convertToInternationalPhone(c.phone);
-            const waMsg = encodeURIComponent(`مرحباً ${c.name}، يرجى العلم أنه قد حان/اقترب موعد القسط الشهري البالغ (${formatMoney(c.monthlyInstallment)} دينار). المبلغ المتبقي بذمتكم هو ${formatMoney(remaining)} دينار. شكراً لتعاونكم.`);
-            window.open(`https://wa.me/${phoneInt}?text=${waMsg}`, '_blank');
-        };
-
-        window.generateReceipt = (client, currentPaymentAmount = 0, receiptIdOverride = null, paymentDateOverride = null, receiptSnapshot = null) => {
-            document.getElementById('sec-dashboard').classList.add('hidden');
-            document.getElementById('sec-newContract')?.classList.add('hidden');
-            document.getElementById('sec-newPayment')?.classList.add('hidden');
-            document.getElementById('sec-clients').classList.add('hidden');
-            document.getElementById('sec-settings').classList.add('hidden');
-
-            const section = document.getElementById('receipt-section');
-            section.classList.remove('hidden');
-
-            if (currentCompanySettings.logoUrl) {
-                document.getElementById('recLogo').src = currentCompanySettings.logoUrl;
-                document.getElementById('recLogo').classList.remove('hidden');
-                const logoText = document.getElementById('recLogoText');
-                if (logoText) logoText.classList.add('hidden');
-            } else {
-                document.getElementById('recLogo').classList.add('hidden');
-                const logoText = document.getElementById('recLogoText');
-                if (logoText) logoText.classList.remove('hidden');
-            }
-            document.getElementById('recCompanyName').textContent = currentCompanySettings.companyName || 'اسم الشركة';
-            document.getElementById('recManager').textContent = currentCompanySettings.managerName || 'المدير';
-            document.getElementById('recPhone').innerHTML = `<span class="ltr-number">${currentCompanySettings.phone || '---'}</span>`;
-            document.getElementById('recAddress').textContent = currentCompanySettings.address || '';
-            document.getElementById('recNote').textContent = currentCompanySettings.receiptNote || 'شكراً لتعاملكم معنا.';
-
-            document.getElementById('recDate').textContent = new Date().toLocaleDateString('ar-EG');
-            document.getElementById('recTxId').textContent = receiptIdOverride || client.transactionId || '---';
-            document.getElementById('recClientName').textContent = client.name;
-            document.getElementById('recClientPhone').innerHTML = `<span class="ltr-number">${client.phone}</span>`;
-            document.getElementById('recItem').textContent = client.itemType;
-
-            const totalForReceipt = receiptSnapshot?.finalTotalPrice ?? client.finalTotalPrice;
-            const monthlyForReceipt = receiptSnapshot?.monthlyInstallment ?? client.monthlyInstallment;
-            const paidForReceipt = receiptSnapshot?.cumulativePaidAfter ?? client.cumulativePaid;
-            const remaining = receiptSnapshot?.remainingAfter ?? (client.finalTotalPrice - client.cumulativePaid);
-            document.getElementById('recTotalDebt').textContent = formatMoney(totalForReceipt);
-            document.getElementById('recMonthly').textContent = formatMoney(monthlyForReceipt);
-            document.getElementById('recPaid').textContent = formatMoney(paidForReceipt);
-            document.getElementById('recRemaining').textContent = formatMoney(remaining);
-            document.getElementById('recNextDue').textContent = client.nextDueDate || 'منتهي';
-
-            if (currentPaymentAmount > 0) {
-                document.getElementById('recCurrentPaymentRow').classList.remove('hidden');
-                document.getElementById('recCurrentPaymentAmount').textContent = formatMoney(currentPaymentAmount);
-                const recPayDateEl = document.getElementById('recPaymentDate');
-                if (recPayDateEl) recPayDateEl.textContent = paymentDateOverride || new Date().toLocaleDateString('ar-EG');
-                document.getElementById('recCurrentPaymentWords').textContent = numberToArabicWords(currentPaymentAmount);
-                const lastPayment = (client.payments || [])[client.payments.length - 1];
-                document.getElementById('recPaymentDate').textContent = lastPayment?.date || new Date().toISOString().slice(0, 10);
-            } else {
-                document.getElementById('recCurrentPaymentRow').classList.add('hidden');
-            }
-
-            document.getElementById('recAmountsWords').textContent = `المبلغ الكلي: ${numberToArabicWords(client.finalTotalPrice)} | المتبقي: ${numberToArabicWords(remaining)}`;
-
-            const phoneInt = convertToInternationalPhone(client.phone);
-            const msg = encodeURIComponent(`*${currentCompanySettings.companyName || 'الشركة'}*\nمرحباً ${client.name}،\nتم إصدار كشف حساب / إيصال.\nالمسدد الكلي: ${formatMoney(client.cumulativePaid)} IQD\nالمتبقي بذمتكم: ${formatMoney(remaining)} IQD\nتاريخ الاستحقاق القادم: ${client.nextDueDate}\nشكراً لكم.`);
-            document.getElementById('btnShareReceipt').onclick = () => window.open(`https://wa.me/${phoneInt}?text=${msg}`, '_blank');
-        };
-
-        window.printStatement = () => {
-            if (!currentViewedClient) return;
-            generateReceipt(currentViewedClient, 0);
-            setTimeout(() => { window.print(); }, 500);
-        };
-
-        window.closeReceipt = () => {
-            document.getElementById('receipt-section').classList.add('hidden');
-            switchTab('newPayment');
-        };
-
-
-        // ==========================================
-        // البحث عن الإيصال برقم الإيصال
-        // ==========================================
-        window.searchReceiptByNumber = () => {
-            const input = document.getElementById('receiptSearchInput');
-            const results = document.getElementById('receiptSearchResults');
-            if (!input || !results) return;
-
-            const q = input.value.trim().toLowerCase();
-            results.innerHTML = '';
-
-            if (!q) {
-                results.innerHTML = '<p style="color:#666;">اكتب رقم الإيصال للبحث.</p>';
-                return;
-            }
-
-            const matches = [];
-
-            allClientsData.forEach(client => {
-                const baseReceipt = client.transactionId || '';
-                const cleanBaseReceipt = String(baseReceipt).toLowerCase().replace(/[^a-z0-9]/g, '');
-                const cleanQBase = q.replace(/[^a-z0-9]/g, '');
-                if (cleanBaseReceipt === cleanQBase) {
-                    matches.push({
-                        client,
-                        type: 'عقد',
-                        receiptId: baseReceipt,
-                        amount: 0,
-                        date: client.createdAt ? new Date(client.createdAt).toLocaleDateString('ar-EG') : '---'
-                    });
-                }
-
-                if (client.payments && client.payments.length) {
-                    client.payments.forEach((p, index) => {
-                        const rid = p.receiptId || `${baseReceipt || 'TXN'}-P${index + 1}`;
-                        const cleanRid = String(rid).toLowerCase().replace(/[^a-z0-9]/g, '');
-                        const cleanQ = q.replace(/[^a-z0-9]/g, '');
-                        if (cleanRid === cleanQ) {
-                            matches.push({
-                                client,
-                                type: 'دفعة',
-                                receiptId: rid,
-                                amount: p.amount || 0,
-                                date: p.date || '---',
-                                snapshot: {
-                                    cumulativePaidAfter: p.cumulativePaidAfter,
-                                    remainingAfter: p.remainingAfter,
-                                    finalTotalPrice: p.finalTotalPrice,
-                                    monthlyInstallment: p.monthlyInstallment
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-
-            if (!matches.length) {
-                results.innerHTML = '<div class="alert-item urgent"><strong>لا يوجد إيصال بهذا الرقم.</strong></div>';
-                return;
-            }
-
-            window.receiptSearchMatches = matches;
-
-            results.innerHTML = matches.map((m, i) => `
-                <div class="alert-item">
-                    <div>
-                        <strong>${m.receiptId}</strong> - ${m.type}<br>
-                        <span style="font-size:0.9rem;color:#666;">
-                            الزبون: ${m.client.name} | الهاتف: ${m.client.phone} | التاريخ: ${m.date}
-                            ${m.amount ? ` | المبلغ: ${formatMoney(m.amount)} د.ع` : ''}
-                        </span>
-                    </div>
-                    <button class="btn btn-primary" onclick="openReceiptSearchResult(${i})">
-                        <i class="fas fa-eye"></i> فتح
-                    </button>
-                </div>
-            `).join('');
-        };
-
-        window.openReceiptSearchResult = (index) => {
-            const match = window.receiptSearchMatches && window.receiptSearchMatches[index];
-            if (!match) return;
-            generateReceipt(match.client, match.amount || 0, match.receiptId, match.date, match.snapshot || null);
-        };
-
-
-        const tabs = {
-            dashboard: { el: 'sec-dashboard', title: 'لوحة الإشعارات', icon: 'fa-chart-line' },
-            newContract: { el: 'sec-newContract', title: 'إضافة عقد', icon: 'fa-file-contract' },
-            newPayment: { el: 'sec-newPayment', title: 'إضافة قسط', icon: 'fa-money-bill-wave' },
-            clients: { el: 'sec-clients', title: 'إدارة العملاء', icon: 'fa-users' },
-            receiptSearch: { el: 'sec-receiptSearch', title: 'بحث الإيصال', icon: 'fa-receipt' },
-            overdue: { el: 'sec-overdue', title: 'معالجة المتأخرين', icon: 'fa-user-clock' },
-            reports: { el: 'sec-reports', title: 'التقارير الشهرية', icon: 'fa-chart-bar' },
-            settings: { el: 'sec-settings', title: 'إعدادات النظام', icon: 'fa-cogs' }
-        };
-
-        window.switchTab = (tabId) => {
-            if (!tabs[tabId]) return;
-            Object.values(tabs).forEach(t => document.getElementById(t.el)?.classList.add('hidden'));
-            document.getElementById('receipt-section').classList.add('hidden');
-            document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabs[tabId].el)?.classList.remove('hidden');
-            document.getElementById('nav-' + tabId)?.classList.add('active');
-            document.getElementById('currentTabTitle').innerHTML = `<i class="fas ${tabs[tabId].icon}"></i> ${tabs[tabId].title}`;
-            if (tabId === 'overdue') renderOverdueManagement();
-
-            if (tabId === 'reports') {
-                const now = new Date();
-                const def = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-                const rm = document.getElementById('reportMonth');
-                if (rm && !rm.value) rm.value = def;
-                renderReports();
-            }
-
-            if (tabId === 'dashboard' || tabId === 'clients' || tabId === 'receiptSearch' || tabId === 'newPayment' || tabId === 'overdue' || tabId === 'reports') {
-                loadAllClients();
-            }
-        };
-        updateSyncStatusUI();
-    
-    // ===== إضافات العمل اليومي المضمونة =====
-    window.generateUniqueReceiptId = window.generateUniqueReceiptId || function() {
-        const d = new Date();
-        const yy = String(d.getFullYear()).slice(-2);
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        const hh = String(d.getHours()).padStart(2, '0');
-        const mi = String(d.getMinutes()).padStart(2, '0');
-        const ss = String(d.getSeconds()).padStart(2, '0');
-        const ms = String(d.getMilliseconds()).padStart(3, '0');
-        const rand = Math.floor(100 + Math.random() * 900);
-        return `${yy}${mm}${dd}${hh}${mi}${ss}${ms}${rand}`;
-    };
-
-    window.printClientsList = window.printClientsList || function() {
-        const rows = allClientsData.map(c => {
-            const remaining = Math.max((parseFloat(c.finalTotalPrice) || 0) - (parseFloat(c.cumulativePaid) || 0), 0);
-            const st = (typeof getClientStatus === 'function') ? getClientStatus(c) : (remaining <= 0 ? 'finished' : (c.status || 'active'));
-            const labels = { active: 'نشط', paused: 'متوقف', finished: 'منتهي' };
-            return `
-                <tr>
-                    <td>${c.name || ''}</td>
-                    <td>${c.phone || ''}</td>
-                    <td>${c.itemType || ''}</td>
-                    <td>${labels[st] || st}</td>
-                    <td>${formatMoney(c.finalTotalPrice)}</td>
-                    <td>${formatMoney(c.cumulativePaid)}</td>
-                    <td>${formatMoney(remaining)}</td>
-                    <td>${remaining > 0 ? (c.nextDueDate || '---') : 'منتهي'}</td>
-                    <td>${c.notes || ''}</td>
-                </tr>`;
-        }).join('');
-
-        const w = window.open('', '_blank');
-        w.document.write(`
-            <html dir="rtl">
-            <head>
-                <meta charset="UTF-8">
-                <title>كشف العملاء</title>
-                <style>
-                    body{font-family:Tahoma,sans-serif;padding:20px;}
-                    table{width:100%;border-collapse:collapse;}
-                    th,td{border:1px solid #ccc;padding:8px;text-align:right;font-size:12px;}
-                    th{background:#1e3a8a;color:#fff;}
-                    h2{color:#1e3a8a;}
-                    @media print{button{display:none;}}
-                </style>
-            </head>
-            <body>
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <h2>كشف العملاء — ${new Date().toLocaleDateString('ar-EG')}</h2>
-                    <button onclick="window.print()" style="padding:8px 16px;background:#1e3a8a;color:#fff;border:none;border-radius:6px;cursor:pointer;">طباعة</button>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الاسم</th>
-                            <th>الهاتف</th>
-                            <th>المادة</th>
-                            <th>الحالة</th>
-                            <th>المبلغ الكلي</th>
-                            <th>المسدد</th>
-                            <th>المتبقي</th>
-                            <th>الاستحقاق</th>
-                            <th>ملاحظة</th>
-                        </tr>
-                    </thead>
-                    <tbody>${rows}</tbody>
-                </table>
-            </body>
-            </html>
-        `);
-        w.document.close();
-    };
-
-
-    // رقم إيصال رقمي فقط وغير متكرر لكل دفعة
-    window.generateUniqueReceiptId = function() {
-        const d = new Date();
-        const yy = String(d.getFullYear()).slice(-2);
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        const hh = String(d.getHours()).padStart(2, '0');
-        const mi = String(d.getMinutes()).padStart(2, '0');
-        const ss = String(d.getSeconds()).padStart(2, '0');
-        const ms = String(d.getMilliseconds()).padStart(3, '0');
-        const rand = String(Math.floor(100 + Math.random() * 900));
-        return `${yy}${mm}${dd}${hh}${mi}${ss}${ms}${rand}`;
-    };
-
-
-    function overdueDays(client) {
-        if (!client || !client.nextDueDate) return 0;
-        const today = new Date(); today.setHours(0,0,0,0);
-        const due = new Date(client.nextDueDate);
-        if (isNaN(due.getTime())) return 0;
-        due.setHours(0,0,0,0);
-        return Math.max(0, Math.floor((today - due) / 86400000));
-    }
-
-    function overdueLevel(days) {
-        if (days >= 60) return { label:'متأخر شهرين أو أكثر', cls:'urgent', action:'اتصال بالكفيل + إيقاف التعامل مؤقتاً' };
-        if (days >= 30) return { label:'متأخر شهر تقريباً', cls:'urgent', action:'اتصال مباشر + رسالة رسمية' };
-        if (days >= 7) return { label:'متأخر أكثر من أسبوع', cls:'today', action:'تذكير واتساب + متابعة' };
-        return { label:'متأخر أيام قليلة', cls:'', action:'تذكير بسيط' };
-    }
-
-    window.renderOverdueManagement = function() {
-        const box = document.getElementById('overdueManagementList');
-        if (!box) return;
-        const list = allClientsData
-            .filter(c => ((parseFloat(c.finalTotalPrice)||0) - (parseFloat(c.cumulativePaid)||0)) > 0)
-            .map(c => ({ client:c, days:overdueDays(c) }))
-            .filter(x => x.days > 0)
-            .sort((a,b) => b.days - a.days);
-
-        if (!list.length) {
-            box.innerHTML = '<p style="color:#10b981;"><i class="fas fa-check-circle"></i> لا يوجد زبائن متأخرون حالياً.</p>';
-            return;
-        }
-
-        box.innerHTML = list.map(({client, days}) => {
-            const level = overdueLevel(days);
-            const remaining = (parseFloat(client.finalTotalPrice)||0) - (parseFloat(client.cumulativePaid)||0);
-            const phone = (typeof phone964 === 'function') ? phone964(client.phone) : client.phone;
-            const msg = encodeURIComponent(`مرحباً ${client.name}، يوجد تأخير في دفع القسط لمدة ${days} يوم. المتبقي بذمتكم ${formatMoney(remaining)} دينار. يرجى التسديد أو مراجعتنا بأقرب وقت.`);
-            return `
-                <div class="alert-item ${level.cls}">
-                    <div>
-                        <strong>${client.name}</strong> — <span class="ltr-number">${client.phone}</span><br>
-                        <span style="font-size:0.9rem;color:#666;">${level.label} | ${days} يوم | المتبقي: ${formatMoney(remaining)} د.ع</span><br>
-                        <span style="font-size:0.85rem;color:#1e3a8a;font-weight:700;">${level.action}</span>
-                    </div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                        <a class="btn btn-whatsapp" style="padding:7px 12px;font-size:0.85rem;text-decoration:none;" target="_blank" href="https://wa.me/${phone}?text=${msg}">
-                            <i class="fab fa-whatsapp"></i> رسالة
-                        </a>
-                        <button class="btn btn-warning" style="padding:7px 12px;font-size:0.85rem;" onclick="markClientPaused('${client.phone}')">
-                            <i class="fas fa-pause"></i> إيقاف مؤقت
-                        </button>
-                        <button class="btn btn-primary" style="padding:7px 12px;font-size:0.85rem;" onclick="viewClientDetails('${client.phone}')">تفاصيل</button>
-                    </div>
-                </div>`;
-        }).join('');
-    };
-
-    window.markClientPaused = async function(phone) {
-        const client = allClientsData.find(c => c.phone === phone);
-        if (!client) return;
-        if (!confirm(`تحديد ${client.name} كعقد متوقف مؤقتاً؟`)) return;
-        showLoader();
-        try {
-            await updateDoc(doc(db, "clients", client.phone), {
-                status: "paused",
-                notes: (client.notes || '') + "\nمتأخر عن الدفع وتم إيقاف التعامل مؤقتاً."
-            });
-            client.status = "paused";
-            client.notes = (client.notes || '') + "\nمتأخر عن الدفع وتم إيقاف التعامل مؤقتاً.";
-            if (typeof renderClientsList === 'function') renderClientsList();
-            renderOverdueManagement();
-            alert("تم تحديث الحالة إلى متوقف.");
-        } catch(e) { alert("تعذر التحديث: " + e.message); }
-        hideLoader();
-    };
-
+window.addEventListener('error',e=>{hideLoader();console.error(e.error||e.message)});
+window.addEventListener('unhandledrejection',e=>{hideLoader();console.error(e.reason)});
 </script>
 </body>
 </html>
