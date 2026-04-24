@@ -750,7 +750,6 @@
                 <li><button onclick="switchTab('newPayment')" id="nav-newPayment"><i class="fas fa-money-bill-wave"></i> إضافة قسط</button></li>
                 <li><button onclick="switchTab('clients')" id="nav-clients"><i class="fas fa-users"></i> بحث والعملاء</button></li>
                 <li><button onclick="switchTab('receiptSearch')" id="nav-receiptSearch"><i class="fas fa-receipt"></i> بحث الإيصال</button></li>
-            <li><button onclick="switchTab('overdue')" id="nav-overdue"><i class="fas fa-user-clock"></i> معالجة المتأخرين</button></li>
                 <li><button onclick="switchTab('reports')" id="nav-reports"><i class="fas fa-chart-bar"></i> التقارير الشهرية</button></li>
                 <li><button onclick="switchTab('settings')" id="nav-settings"><i class="fas fa-cogs"></i> إعدادات الشركة</button></li>
                 <li style="margin-top: auto;"><button onclick="handleLogout()" style="color: #fca5a5;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button></li>
@@ -1025,8 +1024,8 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>رقم الإيصال</label>
-                                <input type="text" id="receiptSearchInput" placeholder="مثال: 260424153012123456" oninput="searchReceiptByNumber()">
-                                <span class="hint-text">اكتب رقم الإيصال الرقمي كامل حتى يطلع الوصل المطلوب فقط.</span>
+                                <input type="text" id="receiptSearchInput" placeholder="مثال: TXN-701425 أو 701425" oninput="searchReceiptByNumber()">
+                                <span class="hint-text">اكتب رقم الإيصال كامل حتى يطلع الوصل المطلوب فقط.</span>
                             </div>
                         </div>
                         <div id="receiptSearchResults" style="margin-top: 15px;"></div>
@@ -1034,16 +1033,7 @@
                 </section>
 
 
-    
-            <section id="sec-overdue" class="hidden">
-                <div class="card">
-                    <h3 class="section-title"><i class="fas fa-user-clock"></i> معالجة المتأخرين عن الدفع</h3>
-                    <p style="color:#666;margin-top:-8px;">تصنيف تلقائي حسب مدة التأخير: أيام / أسبوع / شهر / شهرين.</p>
-                    <div id="overdueManagementList"></div>
-                </div>
-            </section>
-
-            <section id="sec-reports" class="hidden">
+                <section id="sec-reports" class="hidden">
                     <div class="card">
                         <h3 class="section-title"><i class="fas fa-chart-bar"></i> التقرير الشهري</h3>
                         <div style="max-width:300px;margin-bottom:20px;">
@@ -2245,7 +2235,7 @@ window.renderClientsList = () => {
                 const baseReceipt = client.transactionId || '';
                 const cleanBaseReceipt = String(baseReceipt).toLowerCase().replace(/[^a-z0-9]/g, '');
                 const cleanQBase = q.replace(/[^a-z0-9]/g, '');
-                if (cleanBaseReceipt === cleanQBase) {
+                if (cleanBaseReceipt === cleanQBase || baseReceipt.toLowerCase() === q) {
                     matches.push({
                         client,
                         type: 'عقد',
@@ -2260,7 +2250,7 @@ window.renderClientsList = () => {
                         const rid = p.receiptId || `${baseReceipt || 'TXN'}-P${index + 1}`;
                         const cleanRid = String(rid).toLowerCase().replace(/[^a-z0-9]/g, '');
                         const cleanQ = q.replace(/[^a-z0-9]/g, '');
-                        if (cleanRid === cleanQ) {
+                        if (cleanRid === cleanQ || rid.toLowerCase() === q) {
                             matches.push({
                                 client,
                                 type: 'دفعة',
@@ -2325,7 +2315,6 @@ window.renderClientsList = () => {
             document.getElementById(tabs[tabId].el)?.classList.remove('hidden');
             document.getElementById('nav-' + tabId)?.classList.add('active');
             document.getElementById('currentTabTitle').innerHTML = `<i class="fas ${tabs[tabId].icon}"></i> ${tabs[tabId].title}`;
-            if (tabId === 'overdue') renderOverdueManagement();
 
             if (tabId === 'reports') {
                 const now = new Date();
@@ -2335,7 +2324,7 @@ window.renderClientsList = () => {
                 renderReports();
             }
 
-            if (tabId === 'dashboard' || tabId === 'clients' || tabId === 'receiptSearch' || tabId === 'newPayment' || tabId === 'overdue' || tabId === 'reports') {
+            if (tabId === 'dashboard' || tabId === 'clients' || tabId === 'receiptSearch' || tabId === 'newPayment' || tabId === 'reports') {
                 loadAllClients();
             }
         };
@@ -2351,7 +2340,7 @@ window.renderClientsList = () => {
         const mi = String(d.getMinutes()).padStart(2, '0');
         const ss = String(d.getSeconds()).padStart(2, '0');
         const rand = Math.floor(100 + Math.random() * 900);
-        return `${yy}${mm}${dd}${hh}${mi}${ss}${ms}${rand}`;
+        return `REC-${yyyy}${mm}${dd}-${hh}${mi}${ss}-${rand}`;
     };
 
     window.printClientsList = window.printClientsList || function() {
@@ -2413,96 +2402,6 @@ window.renderClientsList = () => {
             </html>
         `);
         w.document.close();
-    };
-
-
-    // رقم إيصال رقمي فقط وغير متكرر لكل دفعة
-    window.generateUniqueReceiptId = function() {
-        const d = new Date();
-        const yy = String(d.getFullYear()).slice(-2);
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        const hh = String(d.getHours()).padStart(2, '0');
-        const mi = String(d.getMinutes()).padStart(2, '0');
-        const ss = String(d.getSeconds()).padStart(2, '0');
-        const ms = String(d.getMilliseconds()).padStart(3, '0');
-        const rand = String(Math.floor(100 + Math.random() * 900));
-        return `${yy}${mm}${dd}${hh}${mi}${ss}${ms}${rand}`;
-    };
-
-
-    function overdueDays(client) {
-        if (!client || !client.nextDueDate) return 0;
-        const today = new Date(); today.setHours(0,0,0,0);
-        const due = new Date(client.nextDueDate);
-        if (isNaN(due.getTime())) return 0;
-        due.setHours(0,0,0,0);
-        return Math.max(0, Math.floor((today - due) / 86400000));
-    }
-
-    function overdueLevel(days) {
-        if (days >= 60) return { label:'متأخر شهرين أو أكثر', cls:'urgent', action:'اتصال بالكفيل + إيقاف التعامل مؤقتاً' };
-        if (days >= 30) return { label:'متأخر شهر تقريباً', cls:'urgent', action:'اتصال مباشر + رسالة رسمية' };
-        if (days >= 7) return { label:'متأخر أكثر من أسبوع', cls:'today', action:'تذكير واتساب + متابعة' };
-        return { label:'متأخر أيام قليلة', cls:'', action:'تذكير بسيط' };
-    }
-
-    window.renderOverdueManagement = function() {
-        const box = document.getElementById('overdueManagementList');
-        if (!box) return;
-        const list = allClientsData
-            .filter(c => ((parseFloat(c.finalTotalPrice)||0) - (parseFloat(c.cumulativePaid)||0)) > 0)
-            .map(c => ({ client:c, days:overdueDays(c) }))
-            .filter(x => x.days > 0)
-            .sort((a,b) => b.days - a.days);
-
-        if (!list.length) {
-            box.innerHTML = '<p style="color:#10b981;"><i class="fas fa-check-circle"></i> لا يوجد زبائن متأخرون حالياً.</p>';
-            return;
-        }
-
-        box.innerHTML = list.map(({client, days}) => {
-            const level = overdueLevel(days);
-            const remaining = (parseFloat(client.finalTotalPrice)||0) - (parseFloat(client.cumulativePaid)||0);
-            const phone = (typeof phone964 === 'function') ? phone964(client.phone) : client.phone;
-            const msg = encodeURIComponent(`مرحباً ${client.name}، يوجد تأخير في دفع القسط لمدة ${days} يوم. المتبقي بذمتكم ${formatMoney(remaining)} دينار. يرجى التسديد أو مراجعتنا بأقرب وقت.`);
-            return `
-                <div class="alert-item ${level.cls}">
-                    <div>
-                        <strong>${client.name}</strong> — <span class="ltr-number">${client.phone}</span><br>
-                        <span style="font-size:0.9rem;color:#666;">${level.label} | ${days} يوم | المتبقي: ${formatMoney(remaining)} د.ع</span><br>
-                        <span style="font-size:0.85rem;color:#1e3a8a;font-weight:700;">${level.action}</span>
-                    </div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                        <a class="btn btn-whatsapp" style="padding:7px 12px;font-size:0.85rem;text-decoration:none;" target="_blank" href="https://wa.me/${phone}?text=${msg}">
-                            <i class="fab fa-whatsapp"></i> رسالة
-                        </a>
-                        <button class="btn btn-warning" style="padding:7px 12px;font-size:0.85rem;" onclick="markClientPaused('${client.phone}')">
-                            <i class="fas fa-pause"></i> إيقاف مؤقت
-                        </button>
-                        <button class="btn btn-primary" style="padding:7px 12px;font-size:0.85rem;" onclick="viewClientDetails('${client.phone}')">تفاصيل</button>
-                    </div>
-                </div>`;
-        }).join('');
-    };
-
-    window.markClientPaused = async function(phone) {
-        const client = allClientsData.find(c => c.phone === phone);
-        if (!client) return;
-        if (!confirm(`تحديد ${client.name} كعقد متوقف مؤقتاً؟`)) return;
-        showLoader();
-        try {
-            await updateDoc(doc(db, "clients", client.phone), {
-                status: "paused",
-                notes: (client.notes || '') + "\nمتأخر عن الدفع وتم إيقاف التعامل مؤقتاً."
-            });
-            client.status = "paused";
-            client.notes = (client.notes || '') + "\nمتأخر عن الدفع وتم إيقاف التعامل مؤقتاً.";
-            if (typeof renderClientsList === 'function') renderClientsList();
-            renderOverdueManagement();
-            alert("تم تحديث الحالة إلى متوقف.");
-        } catch(e) { alert("تعذر التحديث: " + e.message); }
-        hideLoader();
     };
 
 </script>
