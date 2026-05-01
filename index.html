@@ -79,6 +79,113 @@ th{background:var(--light);font-weight:800}
 @page{size:A4;margin:10mm}
 @media print{body *{visibility:hidden}#receipt-section,#receipt-section *{visibility:visible}#receipt-section{position:absolute;left:0;top:0;width:100%}.no-print{display:none!important}#receipt-container{box-shadow:none;margin:0;border:0;padding:0;max-width:100%;width:100%}}
 @media(max-width:900px){.sidebar{width:250px}.content-area{padding:18px}.receipt-top{grid-template-columns:1fr}.receipt-card-body{grid-template-columns:1fr}}
+
+/* ===== Mobile layout improvements ===== */
+.mobile-menu-btn{display:none;background:var(--primary);color:#fff;border:0;border-radius:8px;padding:9px 12px;font-size:1.05rem;cursor:pointer}
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:850}
+body.sidebar-open .mobile-overlay{display:block}
+@media(max-width:768px){
+ body{display:block;height:auto;min-height:100vh;overflow:auto}
+ #app-screen{min-height:100vh}
+ .mobile-menu-btn{display:inline-flex;align-items:center;justify-content:center}
+ .sidebar{position:fixed;top:0;right:-280px;width:270px;height:100vh;z-index:900;transition:right .25s ease;box-shadow:-10px 0 30px rgba(0,0,0,.25)}
+ body.sidebar-open .sidebar{right:0}
+ .main-content{width:100%;min-height:100vh;overflow:visible}
+ .top-bar{position:sticky;top:0;z-index:700;padding:10px 12px;gap:10px}
+ .top-bar h3{font-size:1rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .top-bar>div{font-size:.78rem;white-space:nowrap}
+ .content-area{padding:12px;max-width:100%}
+ .card{padding:15px;border-radius:12px;margin-bottom:14px}
+ .section-title{font-size:1.05rem;margin-bottom:14px}
+ .form-grid{grid-template-columns:1fr!important;gap:8px}
+ input,select,textarea{font-size:16px;padding:11px}
+ .btn{padding:10px 12px;font-size:.9rem;border-radius:8px}
+ .stats-grid,.report-grid{grid-template-columns:1fr 1fr;gap:10px}
+ .stat-card,.report-card{padding:13px;min-height:86px}
+ .stat-icon{font-size:1.35rem}
+ .stat-card strong,.report-card .val{font-size:1.05rem!important}
+ table{min-width:680px;font-size:.86rem}
+ div[style*="overflow-x"]{overflow-x:auto!important}
+ .alert-item{align-items:flex-start;font-size:.9rem}
+ .alert-item .btn,.alert-item a.btn{width:100%;justify-content:center}
+ #clientFullDetails .form-grid{grid-template-columns:1fr!important}
+ #receipt-container{padding:12px;border-radius:12px;margin:8px auto;width:100%;max-width:100%}
+ .receipt-frame{padding:12px}
+ .receipt-top{grid-template-columns:1fr;gap:10px}
+ .receipt-company h2{font-size:1.35rem}
+ .receipt-title-box h1{font-size:1.35rem}
+ .receipt-card-body{grid-template-columns:1fr}
+ .receipt-sign-row{grid-template-columns:1fr}
+ .receipt-stamp{width:95px;height:95px}
+ .premium-table{min-width:0;font-size:.85rem}
+ .premium-table th,.premium-table td{padding:9px 6px}
+ .login-box{max-width:92%;padding:28px 20px}
+}
+@media(max-width:420px){
+ .stats-grid,.report-grid{grid-template-columns:1fr}
+ .top-bar>div{display:none}
+ .sidebar{width:82vw;right:-84vw}
+}
+
+
+/* ===== A4 receipt print control ===== */
+@media print{
+  html,body{
+    width:210mm!important;
+    min-height:297mm!important;
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+    overflow:hidden!important;
+  }
+  body *{visibility:hidden!important}
+  #receipt-section,#receipt-section *{visibility:visible!important}
+  #receipt-section{
+    position:absolute!important;
+    inset:0!important;
+    width:210mm!important;
+    min-height:297mm!important;
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+  }
+  #receipt-container{
+    width:190mm!important;
+    max-width:190mm!important;
+    margin:0 auto!important;
+    padding:7mm!important;
+    border:1.5px solid #38bdf8!important;
+    border-radius:10px!important;
+    box-shadow:none!important;
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+    transform:scale(.94);
+    transform-origin:top center;
+  }
+  .receipt-frame{
+    padding:6mm!important;
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+  }
+  .receipt-top{
+    display:grid!important;
+    grid-template-columns:1fr 1.2fr 1fr!important;
+    gap:6mm!important;
+    margin-bottom:5mm!important;
+  }
+  .receipt-logo-box{min-height:25mm!important}
+  .receipt-company h2{font-size:18pt!important}
+  .receipt-title-box{padding:6mm 3mm!important}
+  .receipt-title-box h1{font-size:18pt!important}
+  .receipt-card-body{grid-template-columns:repeat(3,1fr)!important;gap:4mm!important}
+  th,td{padding:6px!important;font-size:10.5pt!important}
+  .receipt-words,.receipt-note-box{padding:8px!important;margin-top:8px!important}
+  .receipt-sign-row{margin-top:12mm!important}
+  .receipt-stamp{width:28mm!important;height:28mm!important}
+  .no-print{display:none!important}
+}
+@page{size:A4 portrait;margin:8mm}
+
 </style>
 </head>
 <body>
@@ -95,6 +202,7 @@ th{background:var(--light);font-weight:800}
   </div>
 </div>
 
+<div class="mobile-overlay no-print" onclick="closeMobileSidebar()"></div>
 <div id="app-screen">
   <aside class="sidebar no-print">
     <div class="sidebar-header"><h2 id="sidebarCompanyName">نظام إدارة الأقساط</h2></div>
@@ -105,6 +213,7 @@ th{background:var(--light);font-weight:800}
       <li><button onclick="switchTab('clients')" id="nav-clients"><i class="fas fa-users"></i> بحث والعملاء</button></li>
       <li><button onclick="switchTab('receiptSearch')" id="nav-receiptSearch"><i class="fas fa-receipt"></i> بحث الإيصال</button></li>
       <li><button onclick="switchTab('overdue')" id="nav-overdue"><i class="fas fa-user-clock"></i> معالجة المتأخرين</button></li>
+      <li><button onclick="switchTab('finance')" id="nav-finance"><i class="fas fa-coins"></i> التمويل والديون</button></li>
       <li><button onclick="switchTab('reports')" id="nav-reports"><i class="fas fa-chart-bar"></i> التقارير الشهرية</button></li>
       <li><button onclick="switchTab('settings')" id="nav-settings"><i class="fas fa-cogs"></i> إعدادات الشركة</button></li>
       <li style="margin-top:auto"><button onclick="handleLogout()" style="color:#fca5a5"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button></li>
@@ -114,6 +223,7 @@ th{background:var(--light);font-weight:800}
 
   <main class="main-content">
     <header class="top-bar no-print">
+      <button class="mobile-menu-btn" onclick="toggleMobileSidebar()"><i class="fas fa-bars"></i></button>
       <h3 id="currentTabTitle" style="margin:0;color:var(--primary)">لوحة الإشعارات</h3>
       <div><strong><i class="fas fa-user-tie"></i> المدير: <span id="topBarManagerName">---</span></strong></div>
     </header>
@@ -125,6 +235,10 @@ th{background:var(--light);font-weight:800}
           <div class="stat-card danger"><i class="fas fa-exclamation-triangle stat-icon" style="color:var(--danger)"></i><div><div style="color:var(--danger)">متأخرون</div><strong id="dashOverdue" style="font-size:1.5rem;color:var(--danger)">0</strong></div></div>
           <div class="stat-card warning"><i class="fas fa-calendar-day stat-icon" style="color:var(--warning)"></i><div><div style="color:var(--warning)">استحقاق اليوم</div><strong id="dashDueToday" style="font-size:1.5rem;color:var(--warning)">0</strong></div></div>
           <div class="stat-card success"><i class="fas fa-wallet stat-icon" style="color:var(--success)"></i><div><div style="color:var(--success)">إجمالي المطلوبات</div><strong id="dashTotalRemaining" style="font-size:1.15rem;color:var(--success)">0</strong></div></div>
+          <div class="stat-card"><i class="fas fa-hand-holding-dollar stat-icon" style="color:#0ea5e9"></i><div><div style="color:#0ea5e9">إجمالي المدفوع لحد الآن</div><strong id="dashTotalReceived" style="font-size:1.15rem;color:#0ea5e9">0</strong></div></div>
+          <div class="stat-card danger"><i class="fas fa-hand-holding-usd stat-icon" style="color:var(--danger)"></i><div><div style="color:var(--danger)">الديون عليك</div><strong id="dashTotalDebt" style="font-size:1.15rem;color:var(--danger)">0</strong></div></div>
+          <div class="stat-card warning"><i class="fas fa-arrow-up-from-bracket stat-icon" style="color:var(--warning)"></i><div><div style="color:var(--warning)">المستخدم من الصندوق</div><strong id="dashTotalUsed" style="font-size:1.15rem;color:var(--warning)">0</strong></div></div>
+          <div class="stat-card success"><i class="fas fa-cash-register stat-icon" style="color:var(--success)"></i><div><div style="color:var(--success)">الكاش الفعلي</div><strong id="dashCashBox" style="font-size:1.15rem;color:var(--success)">0</strong></div></div>
           <div class="stat-card"><i class="fas fa-chart-pie stat-icon" style="color:var(--primary)"></i><div><div style="color:var(--primary)">الهامش الربحي</div><strong id="dashTotalProfit" style="font-size:1.15rem;color:var(--primary)">0</strong></div></div>
         </div>
         <div class="card"><h3 class="section-title"><i class="fas fa-bell"></i> تنبيهات الاستحقاق</h3><div id="notificationsContainer"></div></div>
@@ -145,7 +259,7 @@ th{background:var(--light);font-weight:800}
             <div class="form-group"><label>سعر الشراء الداخلي (بدون 000)</label><input type="number" id="newPurchasePrice" oninput="calcNewContract()"><div class="amount-display" id="dispNewPurchasePrice">القيمة: 0 دينار</div></div>
             <div class="form-group"><label>المبلغ الكلي للزبون (بدون 000)</label><input type="number" id="newFinalPrice" oninput="calcNewContract()"><div class="amount-display" id="dispNewFinalPrice">القيمة: 0 دينار</div></div>
             <div class="form-group"><label>الدفعة الأولية / المقدمة (بدون 000)</label><input type="number" id="newInitialPayment" oninput="calcNewContract()" placeholder="اختياري"><div class="amount-display" id="dispNewInitialPayment">القيمة: 0 دينار</div></div>
-            <div class="form-group"><label>القسط الشهري (بدون 000)</label><input type="number" id="newMonthlyInstallment" oninput="calcNewContract()"><div class="amount-display" id="dispNewMonthly">القيمة: 0 دينار</div></div>
+<div class="form-group"><label>القسط الشهري (بدون 000)</label><input type="number" id="newMonthlyInstallment" oninput="calcNewContract()"><div class="amount-display" id="dispNewMonthly">القيمة: 0 دينار</div></div>
             <div class="form-group"><label>تاريخ أول استحقاق</label><input type="date" id="newFirstDueDate"></div>
           </div>
           <div class="amount-display">المبلغ الكلي: <span id="summaryTotal">0</span> | الدفعة الأولية: <span id="summaryInitial">0</span> | المتبقي بعد المقدمة: <span id="summaryRemainingAfterInitial">0</span> | الربح المتوقع: <span id="summaryProfit">0</span> | الأشهر: <span id="summaryMonths">0</span></div>
@@ -222,13 +336,67 @@ th{background:var(--light);font-weight:800}
       <section id="sec-receiptSearch" class="hidden">
         <div class="card">
           <h3 class="section-title"><i class="fas fa-receipt"></i> البحث عن الإيصال</h3>
-          <input type="text" id="receiptSearchInput" placeholder="اكتب رقم الإيصال الرقمي كامل" oninput="searchReceiptByNumber()">
+          <input type="text" id="receiptSearchInput" placeholder="اكتب رقم الإيصال المكون من 6 أرقام" oninput="searchReceiptByNumber()">
           <div id="receiptSearchResults" style="margin-top:15px"></div>
         </div>
       </section>
 
       <section id="sec-overdue" class="hidden">
         <div class="card"><h3 class="section-title"><i class="fas fa-user-clock"></i> معالجة المتأخرين</h3><div id="overdueManagementList"></div></div>
+      </section>
+
+
+      <section id="sec-finance" class="hidden">
+        <div class="card">
+          <h3 class="section-title"><i class="fas fa-coins"></i> لوحة التمويل والديون</h3>
+          <p style="color:#666;margin-top:-8px">هذه اللوحة خاصة بالإدارة فقط: سجّل الديون أو التمويل الخارجي بعيداً عن إضافة العقد والقسط.</p>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>نوع العملية</label>
+              <select id="financeType">
+                <option value="debt">دين خارجي عليك</option>
+                <option value="capital">رأس مال خاص</option>
+                <option value="use_internal">استخدام من الصندوق</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>المبلغ (بدون 000)</label>
+              <input type="number" id="financeAmount" placeholder="مثال: 500">
+            </div>
+            <div class="form-group">
+              <label>اسم الدائن / المصدر</label>
+              <input type="text" id="financeSource" placeholder="مثال: أحمد / رأس مالي / الصندوق">
+            </div>
+            <div class="form-group">
+              <label>تاريخ الاستحقاق / الملاحظة الزمنية</label>
+              <input type="date" id="financeDueDate">
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label>ملاحظة</label>
+              <textarea id="financeNote" rows="2" placeholder="مثال: تم أخذ 500 ألف لشراء جهاز للزبون فلان"></textarea>
+            </div>
+          </div>
+          <button class="btn btn-success" onclick="saveFinanceRecord()"><i class="fas fa-save"></i> حفظ العملية</button>
+        </div>
+
+        <div class="card">
+          <h3 class="section-title"><i class="fas fa-list"></i> سجل التمويل والديون</h3>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>النوع</th>
+                  <th>المبلغ</th>
+                  <th>المصدر / الدائن</th>
+                  <th>الاستحقاق</th>
+                  <th>ملاحظة</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="financeTableBody"></tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <section id="sec-reports" class="hidden">
@@ -264,7 +432,7 @@ th{background:var(--light);font-weight:800}
         <div class="no-print" style="max-width:800px;margin:0 auto 10px;text-align:left">
           <button class="btn btn-danger" onclick="closeReceipt()"><i class="fas fa-times"></i> إغلاق</button>
           <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
-          <button class="btn btn-whatsapp" id="btnShareReceipt"><i class="fab fa-whatsapp"></i> مشاركة</button>
+          <button class="btn btn-whatsapp" id="btnShareReceipt"><i class="fab fa-whatsapp"></i> إرسال تفاصيل القسط واتساب</button>
         </div>
         <div id="receipt-container">
           <div class="receipt-frame">
@@ -295,7 +463,7 @@ import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, dele
 const firebaseConfig={apiKey:"AIzaSyAYQwmNQaagd4QobK8QGyR7rSMS6HVigWk",authDomain:"ahmed-6706d.firebaseapp.com",projectId:"ahmed-6706d",storageBucket:"ahmed-6706d.firebasestorage.app",messagingSenderId:"244229036057",appId:"1:244229036057:web:ee39dd5f345ef8e615f288"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 
-let currentCompanySettings={},allClientsData=[],logoBase64="",currentActiveClientForPayment=null,currentViewedClient=null;
+let currentCompanySettings={},allClientsData=[],allFinanceData=[],logoBase64="",currentActiveClientForPayment=null,currentViewedClient=null;
 const statusLabel={active:'نشط',paused:'متوقف',finished:'منتهي'},statusClass={active:'status-active',paused:'status-paused',finished:'status-finished'};
 const $=id=>document.getElementById(id);
 const formatMoney=n=>(parseFloat(n)||0).toLocaleString('en-US');
@@ -303,13 +471,80 @@ const toKilo=v=>(parseFloat(v)||0)*1000;
 const showLoader=()=>$('loader').classList.remove('hidden'),hideLoader=()=>$('loader').classList.add('hidden');
 const phone964=p=>{p=(p||'').trim();return p.startsWith('07')?'964'+p.slice(1):p};
 const getClientStatus=c=>{const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);return rem<=0?'finished':(c.status||'active')};
-const receiptId=()=>{const d=new Date();return `${String(d.getFullYear()).slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}${String(d.getSeconds()).padStart(2,'0')}${String(d.getMilliseconds()).padStart(3,'0')}${Math.floor(100+Math.random()*900)}`};
-const words=n=>`${formatMoney(n)} دينار عراقي فقط لا غير`;
+const receiptId=()=>{
+  const used=new Set();
+  allClientsData.forEach(c=>(c.payments||[]).forEach(p=>{
+    const n=String(p.receiptId||'').replace(/\D/g,'');
+    if(/^\d{6}$/.test(n)) used.add(n);
+  }));
+  let max=100000;
+  used.forEach(x=>{const n=parseInt(x,10);if(n>max)max=n;});
+  const local=parseInt(localStorage.getItem('receipt_counter_6digit')||'100000',10);
+  if(!isNaN(local)&&local>max&&local<=999999)max=local;
+  for(let i=0;i<900000;i++){
+    let next=max+1+i;
+    if(next>999999)next=100001+(next-1000000);
+    const id=String(next).padStart(6,'0');
+    if(!used.has(id)){
+      localStorage.setItem('receipt_counter_6digit',id);
+      return id;
+    }
+  }
+  return String(Math.floor(100000+Math.random()*900000));
+};
+const words=n=>{
+    n=Math.floor(+n||0);
+    if(!n) return 'صفر دينار عراقي فقط لا غير';
+    const ones=['','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة'];
+    const tens=['','عشرة','عشرون','ثلاثون','أربعون','خمسون','ستون','سبعون','ثمانون','تسعون'];
+    const teens=['عشرة','أحد عشر','اثنا عشر','ثلاثة عشر','أربعة عشر','خمسة عشر','ستة عشر','سبعة عشر','ثمانية عشر','تسعة عشر'];
+    const hundreds=['','مئة','مئتان','ثلاثمئة','أربعمئة','خمسمئة','ستمئة','سبعمئة','ثمانمئة','تسعمئة'];
+    const under1000=x=>{
+        const h=Math.floor(x/100), r=x%100;
+        const parts=[];
+        if(h) parts.push(hundreds[h]);
+        if(r){
+            if(r<10) parts.push(ones[r]);
+            else if(r<20) parts.push(teens[r-10]);
+            else{
+                const t=Math.floor(r/10), o=r%10;
+                parts.push(o?`${ones[o]} و${tens[t]}`:tens[t]);
+            }
+        }
+        return parts.join(' و');
+    };
+    const scales=[
+        {v:1000000000,s:'مليار',d:'ملياران',p:'مليارات'},
+        {v:1000000,s:'مليون',d:'مليونان',p:'ملايين'},
+        {v:1000,s:'ألف',d:'ألفان',p:'آلاف'}
+    ];
+    const parts=[];
+    for(const sc of scales){
+        const q=Math.floor(n/sc.v);
+        if(q){
+            if(q===1) parts.push(sc.s);
+            else if(q===2) parts.push(sc.d);
+            else if(q>=3&&q<=10) parts.push(`${under1000(q)} ${sc.p}`);
+            else parts.push(`${under1000(q)} ${sc.s}`);
+            n%=sc.v;
+        }
+    }
+    if(n) parts.push(under1000(n));
+    return parts.join(' و')+' دينار عراقي فقط لا غير';
+};
 
-window.handleLogin=async()=>{const e=$('loginEmail').value.trim(),p=$('loginPassword').value,err=$('loginError');if(!e||!p)return;showLoader();try{await signInWithEmailAndPassword(auth,e,p);err.style.display='none'}catch(x){err.textContent='خطأ في تسجيل الدخول. تأكد من البريد وكلمة المرور.';err.style.display='block'}hideLoader()};
+window.handleLogin=async()=>{const e=$('loginEmail').value.trim(),p=$('loginPassword').value,err=$('loginError');if(!e||!p){err.textContent='يرجى إدخال البريد الإلكتروني وكلمة المرور.';err.style.display='block';return}showLoader();try{await signInWithEmailAndPassword(auth,e,p);err.style.display='none'}catch(x){err.textContent='خطأ في تسجيل الدخول. تأكد من البريد وكلمة المرور.';err.style.display='block'}hideLoader()};
 window.handleLogout=async()=>{if(confirm('تسجيل الخروج؟'))await signOut(auth)};
 
-onAuthStateChanged(auth,async user=>{if(user){$('login-screen').style.display='none';$('app-screen').style.display='flex';await loadSettings();await loadAllClients()}else{$('login-screen').style.display='flex';$('app-screen').style.display='none'}});
+
+window.toggleMobileSidebar = function() {
+    document.body.classList.toggle('sidebar-open');
+};
+window.closeMobileSidebar = function() {
+    document.body.classList.remove('sidebar-open');
+};
+
+onAuthStateChanged(auth,async user=>{if(user){$('login-screen').style.display='none';$('app-screen').style.display='flex';await loadSettings();await loadAllClients();await loadFinanceData()}else{$('login-screen').style.display='flex';$('app-screen').style.display='none'}});
 
 async function loadSettings(){try{const s=await getDoc(doc(db,'settings','business_info'));currentCompanySettings=s.exists()?s.data():{}}catch{currentCompanySettings={}}applySettingsUI()}
 function applySettingsUI(){['CompanyName','ManagerName','Phone','Whatsapp','Address','ReceiptNote'].forEach(k=>{const key=k[0].toLowerCase()+k.slice(1),el=$('set'+k);if(el)el.value=currentCompanySettings[key]||''});$('sidebarCompanyName').textContent=currentCompanySettings.companyName||'نظام إدارة الأقساط';$('topBarManagerName').textContent=currentCompanySettings.managerName||'المدير';if(currentCompanySettings.logoUrl){logoBase64=currentCompanySettings.logoUrl;$('logoPreview').src=logoBase64;$('logoPreview').style.display='block'}}
@@ -322,14 +557,24 @@ function populateNames(){const l=$('clientNamesList');if(l)l.innerHTML=allClient
 
 window.calcNewContract=()=>{const pp=toKilo($('newPurchasePrice').value),fp=toKilo($('newFinalPrice').value),init=toKilo($('newInitialPayment')?.value||0),mo=toKilo($('newMonthlyInstallment').value);$('dispNewPurchasePrice').textContent=`القيمة: ${formatMoney(pp)} دينار`;$('dispNewFinalPrice').textContent=`القيمة: ${formatMoney(fp)} دينار`;if($('dispNewInitialPayment'))$('dispNewInitialPayment').textContent=`القيمة: ${formatMoney(init)} دينار`;$('dispNewMonthly').textContent=`القيمة: ${formatMoney(mo)} دينار`;$('summaryTotal').textContent=formatMoney(fp);if($('summaryInitial'))$('summaryInitial').textContent=formatMoney(init);if($('summaryRemainingAfterInitial'))$('summaryRemainingAfterInitial').textContent=formatMoney(Math.max(fp-init,0));$('summaryProfit').textContent=formatMoney(Math.max(fp-pp,0));$('summaryMonths').textContent=mo?Math.ceil(Math.max(fp-init,0)/mo):0};
 
-window.saveNewContract=async()=>{const name=$('newClientName').value.trim(),phone=$('newClientPhone').value.trim(),item=$('newItemType').value.trim(),pp=toKilo($('newPurchasePrice').value),fp=toKilo($('newFinalPrice').value),init=toKilo($('newInitialPayment')?.value||0),mo=toKilo($('newMonthlyInstallment').value),due=$('newFirstDueDate').value;if(!name||!phone||!item||fp<=0||mo<=0||!due){alert('املأ الحقول الأساسية');return}if(init>fp){alert('الدفعة الأولية أكبر من المبلغ الكلي');return}if(allClientsData.some(c=>c.phone===phone)){alert('رقم الهاتف موجود مسبقاً');return}const createdAt=new Date().toISOString();const initReceipt=init>0?receiptId():null;const initPayment=init>0?{amount:init,date:createdAt.slice(0,10),timestamp:Date.now(),receiptId:initReceipt,type:'initial',cumulativePaidAfter:init,remainingAfter:fp-init,finalTotalPrice:fp,monthlyInstallment:mo}:null;const c={id:phone,name,phone,guarantorName:$('newGuarantorName').value.trim(),guarantorPhone:$('newGuarantorPhone').value.trim(),itemType:item,purchasePrice:pp,finalTotalPrice:fp,monthlyInstallment:mo,initialPayment:init,cumulativePaid:init,nextDueDate:due,payments:initPayment?[initPayment]:[],notes:'',status:'active',createdAt,transactionId:`CON-${Date.now()}`};showLoader();try{await setDoc(doc(db,'clients',phone),c);alert(init>0?'تم حفظ العقد وتسجيل الدفعة الأولية':'تم حفظ العقد');await loadAllClients();if(init>0)generateReceipt(c,init,initReceipt,createdAt.slice(0,10),initPayment)}catch(e){alert('خطأ في الحفظ: '+e.message)}hideLoader()};
+window.saveNewContract=async()=>{const name=$('newClientName').value.trim(),phone=$('newClientPhone').value.trim(),item=$('newItemType').value.trim(),pp=toKilo($('newPurchasePrice').value),fp=toKilo($('newFinalPrice').value),init=toKilo($('newInitialPayment')?.value||0),mo=toKilo($('newMonthlyInstallment').value),due=$('newFirstDueDate').value;if(!name||!phone||!item||fp<=0||mo<=0||!due){alert('املأ الحقول الأساسية');return}if(init>fp){alert('الدفعة الأولية أكبر من المبلغ الكلي');return}if(allClientsData.some(c=>c.phone===phone)){alert('رقم الهاتف موجود مسبقاً');return}const createdAt=new Date().toISOString();const initReceipt=init>0?receiptId():null;const initPayment=init>0?{amount:init,date:createdAt.slice(0,10),timestamp:Date.now(),receiptId:initReceipt,type:'initial',cumulativePaidAfter:init,remainingAfter:fp-init,finalTotalPrice:fp,monthlyInstallment:mo}:null;const c={id:phone,name,phone,guarantorName:$('newGuarantorName').value.trim(),guarantorPhone:$('newGuarantorPhone').value.trim(),itemType:item,purchasePrice:pp,finalTotalPrice:fp,monthlyInstallment:mo,initialPayment:init,cumulativePaid:init,nextDueDate:due,payments:initPayment?[initPayment]:[],notes:'',status:'active',createdAt,transactionId:`CON-${Date.now()}`};showLoader();try{await setDoc(doc(db,'clients',phone),c);alert(init>0?'تم حفظ العقد وتسجيل الدفعة الأولية':'تم حفظ العقد');await loadAllClients();['newClientName','newClientPhone','newGuarantorName','newGuarantorPhone','newItemType','newPurchasePrice','newFinalPrice','newInitialPayment','newMonthlyInstallment','newFirstDueDate'].forEach(id=>{if($(id))$(id).value=''});calcNewContract();if(init>0)generateReceipt(c,init,initReceipt,createdAt.slice(0,10),initPayment)}catch(e){alert('خطأ في الحفظ: '+e.message)}hideLoader()};
 
 window.loadClientForPayment=()=>{const q=$('paySearchName').value.trim().toLowerCase();const c=allClientsData.find(x=>(x.name||'').toLowerCase()===q)||allClientsData.find(x=>q&&(x.name||'').toLowerCase().includes(q));if(!c){currentActiveClientForPayment=null;$('paymentArea').classList.add('hidden');return}currentActiveClientForPayment=c;$('payClientName').textContent=c.name;$('payTotalDebt').textContent=formatMoney(c.finalTotalPrice);$('payPaid').textContent=formatMoney(c.cumulativePaid);$('payRemaining').textContent=formatMoney((+c.finalTotalPrice||0)-(+c.cumulativePaid||0));$('payMonthly').textContent=formatMoney(c.monthlyInstallment);if(!$('payPaymentDate').value)$('payPaymentDate').value=new Date().toISOString().slice(0,10);$('paymentArea').classList.remove('hidden')};
 window.calcPaymentDisplay=()=>{$('dispPayAmount').textContent=`القيمة: ${formatMoney(toKilo($('payAmountInput').value))} دينار`};
 
-window.submitPayment=async()=>{const c=currentActiveClientForPayment;if(!c)return;const amount=toKilo($('payAmountInput').value),pd=$('payPaymentDate').value,nd=$('payNextDueDate').value;if(amount<=0||!pd||!nd){alert('أكمل بيانات الدفعة');return}const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);if(amount>rem){alert('المبلغ أكبر من المتبقي');return}const newPaid=(+c.cumulativePaid||0)+amount;const p={amount,date:pd,timestamp:Date.now(),receiptId:receiptId(),cumulativePaidAfter:newPaid,remainingAfter:c.finalTotalPrice-newPaid,finalTotalPrice:c.finalTotalPrice,monthlyInstallment:c.monthlyInstallment};const payments=[...(c.payments||[]),p];showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{payments,cumulativePaid:newPaid,nextDueDate:nd});const updated={...c,payments,cumulativePaid:newPaid,nextDueDate:nd};currentActiveClientForPayment=updated;await loadAllClients();generateReceipt(updated,amount,p.receiptId,pd,p);alert('تم تسجيل الدفعة')}catch(e){alert('خطأ: '+e.message)}hideLoader()};
+window.submitPayment=async()=>{const c=currentActiveClientForPayment;if(!c)return;const amount=toKilo($('payAmountInput').value),pd=$('payPaymentDate').value,nd=$('payNextDueDate').value;if(amount<=0||!pd||!nd){alert('أكمل بيانات الدفعة');return}const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);if(amount>rem){alert('المبلغ أكبر من المتبقي');return}const newPaid=(+c.cumulativePaid||0)+amount;const p={amount,date:pd,timestamp:Date.now(),receiptId:receiptId(),cumulativePaidAfter:newPaid,remainingAfter:c.finalTotalPrice-newPaid,finalTotalPrice:c.finalTotalPrice,monthlyInstallment:c.monthlyInstallment};const payments=[...(c.payments||[]),p];showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{payments,cumulativePaid:newPaid,nextDueDate:nd});const updated={...c,payments,cumulativePaid:newPaid,nextDueDate:nd};currentActiveClientForPayment=updated;await loadAllClients();$('payAmountInput').value='';$('payPaymentDate').value='';$('payNextDueDate').value='';calcPaymentDisplay();alert('تم تسجيل الدفعة');generateReceipt(updated,amount,p.receiptId,pd,p)}catch(e){alert('خطأ: '+e.message)}hideLoader()};
 
-function renderDashboard(){let overdue=0,today=0,totalRem=0,profit=0,alerts='';const now=new Date();now.setHours(0,0,0,0);allClientsData.forEach(c=>{const rem=Math.max((+c.finalTotalPrice||0)-(+c.cumulativePaid||0),0);totalRem+=rem;profit+=Math.max((+c.finalTotalPrice||0)-(+c.purchasePrice||0),0);if(rem>0&&c.nextDueDate){const d=new Date(c.nextDueDate);d.setHours(0,0,0,0);const diff=Math.ceil((d-now)/86400000);if(diff<0){overdue++;alerts+=alertHTML(c,`متأخر ${Math.abs(diff)} يوم`,'urgent')}else if(diff===0){today++;alerts+=alertHTML(c,'استحقاق اليوم','today')}}});$('dashTotalClients').textContent=allClientsData.length;$('dashOverdue').textContent=overdue;$('dashDueToday').textContent=today;$('dashTotalRemaining').textContent=formatMoney(totalRem)+' د.ع';$('dashTotalProfit').textContent=formatMoney(profit)+' د.ع';$('notificationsContainer').innerHTML=alerts||'<p style="color:#10b981"><i class="fas fa-check-circle"></i> لا توجد استحقاقات قريبة أو متأخرة.</p>'}
+
+function calculateCashBox(){
+  const totalReceived=allClientsData.reduce((s,c)=>s+(+c.cumulativePaid||0),0);
+  const totalDebt=allFinanceData.filter(x=>x.type==='debt').reduce((s,x)=>s+(+x.amount||0),0);
+  const totalCapital=allFinanceData.filter(x=>x.type==='capital').reduce((s,x)=>s+(+x.amount||0),0);
+  const totalUsed=allFinanceData.filter(x=>x.type==='use_internal'||x.type==='cash').reduce((s,x)=>s+(+x.amount||0),0);
+  const cash=totalReceived+totalDebt+totalCapital-totalUsed;
+  return {totalReceived,totalDebt,totalCapital,totalUsed,cash};
+}
+
+function renderDashboard(){let overdue=0,today=0,totalRem=0,totalReceived=0,totalDebt=0,profit=0,alerts='';const now=new Date();now.setHours(0,0,0,0);allClientsData.forEach(c=>{const rem=Math.max((+c.finalTotalPrice||0)-(+c.cumulativePaid||0),0);totalRem+=rem;totalReceived+=(+c.cumulativePaid||0);profit+=Math.max((+c.finalTotalPrice||0)-(+c.purchasePrice||0),0);if(rem>0&&c.nextDueDate){const d=new Date(c.nextDueDate);d.setHours(0,0,0,0);const diff=Math.ceil((d-now)/86400000);if(diff<0){overdue++;alerts+=alertHTML(c,`متأخر ${Math.abs(diff)} يوم`,'urgent')}else if(diff===0){today++;alerts+=alertHTML(c,'استحقاق اليوم','today')}}});$('dashTotalClients').textContent=allClientsData.length;$('dashOverdue').textContent=overdue;$('dashDueToday').textContent=today;$('dashTotalRemaining').textContent=formatMoney(totalRem)+' د.ع';const box=calculateCashBox();if($('dashTotalReceived'))$('dashTotalReceived').textContent=formatMoney(box.totalReceived)+' د.ع';if($('dashTotalDebt'))$('dashTotalDebt').textContent=formatMoney(box.totalDebt)+' د.ع';if($('dashTotalUsed'))$('dashTotalUsed').textContent=formatMoney(box.totalUsed)+' د.ع';if($('dashCashBox')){$('dashCashBox').textContent=formatMoney(box.cash)+' د.ع';$('dashCashBox').style.color=box.cash<0?'var(--danger)':'var(--success)'}$('dashTotalProfit').textContent=formatMoney(profit)+' د.ع';$('notificationsContainer').innerHTML=alerts||'<p style="color:#10b981"><i class="fas fa-check-circle"></i> لا توجد استحقاقات قريبة أو متأخرة.</p>'}
 function alertHTML(c,msg,cls){const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);const m=encodeURIComponent(`مرحباً ${c.name}، ${msg}. المتبقي: ${formatMoney(rem)} دينار.`);return `<div class="alert-item ${cls}"><div><strong>${c.name}</strong> <span class="ltr-number">${c.phone}</span><br><small>${msg} — المتبقي ${formatMoney(rem)} د.ع</small></div><a class="btn btn-whatsapp" target="_blank" href="https://wa.me/${phone964(c.phone)}?text=${m}"><i class="fab fa-whatsapp"></i> تذكير</a></div>`}
 
 window.renderClientsList=()=>{const q=($('generalSearch')?.value||'').toLowerCase();const tb=$('clientsTableBody');if(!tb)return;const arr=allClientsData.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.itemType||'').toLowerCase().includes(q));tb.innerHTML=arr.length?arr.map(c=>{const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0),st=getClientStatus(c);return `<tr><td>${c.name||''}</td><td><span class="ltr-number">${c.phone||''}</span></td><td>${c.itemType||''}</td><td><span class="status-badge ${statusClass[st]}">${statusLabel[st]}</span></td><td style="color:${rem>0?'var(--danger)':'var(--success)'};font-weight:bold">${formatMoney(rem)}</td><td>${rem>0?(c.nextDueDate||'---'):'منتهي'}</td><td><button class="btn btn-primary" style="padding:6px 10px;font-size:.82rem" onclick="viewClientDetails('${c.phone}')">تفاصيل</button></td></tr>`}).join(''):'<tr><td colspan="7" style="text-align:center;color:#666">لا توجد بيانات عملاء.</td></tr>'};
@@ -339,7 +584,27 @@ window.closeClientDetails=()=>$('clientFullDetails').classList.add('hidden');
 
 window.toggleClientStatus=async()=>{const c=currentViewedClient;if(!c)return;const st=getClientStatus(c);if(st==='finished')return;const ns=st==='active'?'paused':'active';showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{status:ns});await loadAllClients();viewClientDetails(c.phone)}catch(e){alert('خطأ: '+e.message)}hideLoader()};
 window.saveClientNote=async()=>{const c=currentViewedClient;if(!c)return;showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{notes:$('clientNoteInput').value.trim()});await loadAllClients();alert('تم حفظ الملاحظة')}catch(e){alert('خطأ: '+e.message)}hideLoader()};
-window.deletePayment=async(i)=>{const c=currentViewedClient;if(!c||!c.payments?.[i])return;if(!confirm('حذف هذه الدفعة؟'))return;const payments=[...c.payments];payments.splice(i,1);const paid=payments.reduce((s,p)=>s+(+p.amount||0),0);showLoader();try{await updateDoc(doc(db,'clients',c.id||c.phone),{payments,cumulativePaid:paid});await loadAllClients();viewClientDetails(c.phone);alert('تم حذف الدفعة')}catch(e){alert('خطأ: '+e.message)}hideLoader()};
+window.deletePayment=async(i)=>{
+    const c=currentViewedClient;
+    if(!c||!Array.isArray(c.payments)||i<0||i>=c.payments.length){
+        alert('لم يتم العثور على الدفعة.');
+        return;
+    }
+    if(!confirm('حذف هذه الدفعة؟'))return;
+    const payments=[...c.payments];
+    payments.splice(i,1);
+    const paid=payments.reduce((s,p)=>s+(+p.amount||0),0);
+    showLoader();
+    try{
+        await updateDoc(doc(db,'clients',c.id||c.phone),{payments,cumulativePaid:paid});
+        await loadAllClients();
+        viewClientDetails(c.phone);
+        alert('تم حذف الدفعة');
+    }catch(e){
+        alert('خطأ: '+e.message);
+    }
+    hideLoader();
+};
 window.deleteCurrentClient=async()=>{const c=currentViewedClient;if(!c)return;if(!confirm(`حذف الزبون ${c.name}؟`))return;showLoader();try{await deleteDoc(doc(db,'clients',c.id||c.phone));$('clientFullDetails').classList.add('hidden');await loadAllClients()}catch(e){alert('خطأ: '+e.message)}hideLoader()};
 window.sendReminderFromDetails=()=>{const c=currentViewedClient;if(!c)return;const rem=(+c.finalTotalPrice||0)-(+c.cumulativePaid||0);const m=encodeURIComponent(`مرحباً ${c.name}، المتبقي بذمتكم ${formatMoney(rem)} دينار.`);window.open(`https://wa.me/${phone964(c.phone)}?text=${m}`,'_blank')};
 
@@ -351,14 +616,205 @@ window.renderOverdue=()=>{const list=allClientsData.map(c=>({c,days:overdueDays(
 
 window.renderReports=()=>{const mv=$('reportMonth').value;if(!mv)return;const [y,m]=mv.split('-').map(Number);let income=0,contracts=0,profit=0,rows=[];allClientsData.forEach(c=>{if(c.createdAt){const d=new Date(c.createdAt);if(d.getFullYear()===y&&d.getMonth()+1===m){contracts++;profit+=Math.max((+c.finalTotalPrice||0)-(+c.purchasePrice||0),0)}};(c.payments||[]).forEach(p=>{const ds=p.date||'';if(ds.startsWith(mv)){income+=(+p.amount||0);rows.push(`<tr><td>${c.name}</td><td>${c.itemType}</td><td>${ds}</td><td>${p.receiptId||'-'}</td><td>${formatMoney(p.amount)} د.ع</td></tr>`)}})});$('repMonthCollections').textContent=formatMoney(income)+' د.ع';$('repNewContracts').textContent=contracts;$('repMonthProfit').textContent=formatMoney(profit)+' د.ع';$('repPaymentsTableBody').innerHTML=rows.join('')||'<tr><td colspan="5" style="text-align:center;color:#666">لا توجد دفعات في هذا الشهر.</td></tr>'};
 
-window.printClientsList=()=>{const rows=allClientsData.map(c=>{const rem=Math.max((+c.finalTotalPrice||0)-(+c.cumulativePaid||0),0),st=getClientStatus(c);return `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.itemType}</td><td>${statusLabel[st]}</td><td>${formatMoney(c.finalTotalPrice)}</td><td>${formatMoney(c.cumulativePaid)}</td><td>${formatMoney(rem)}</td><td>${rem>0?c.nextDueDate:'منتهي'}</td><td>${c.notes||''}</td></tr>`}).join('');const w=window.open('','_blank');w.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:Tahoma;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:right;font-size:12px}th{background:#1e3a8a;color:#fff}</style></head><body><h2>كشف العملاء</h2><button onclick="window.print()">طباعة</button><table><thead><tr><th>الاسم</th><th>الهاتف</th><th>المادة</th><th>الحالة</th><th>الكلي</th><th>المسدد</th><th>المتبقي</th><th>الاستحقاق</th><th>ملاحظة</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);w.document.close()};
 
-window.generateReceipt=(c,amount=0,rid=null,pd=null,snap=null)=>{Object.values(tabs).forEach(t=>$(t.el).classList.add('hidden'));$('receipt-section').classList.remove('hidden');if(currentCompanySettings.logoUrl){$('recLogo').src=currentCompanySettings.logoUrl;$('recLogo').classList.remove('hidden');$('recLogoText').classList.add('hidden')}else{$('recLogo').classList.add('hidden');$('recLogoText').classList.remove('hidden')}$('recCompanyName').textContent=currentCompanySettings.companyName||'اسم الشركة';$('recManager').textContent=currentCompanySettings.managerName||'المدير';$('recPhone').textContent=currentCompanySettings.phone||'---';$('recAddress').textContent=currentCompanySettings.address||'';$('recDate').textContent=new Date().toLocaleDateString('ar-EG');$('recTxId').textContent=rid||c.transactionId||'---';$('recClientName').textContent=c.name;$('recClientPhone').textContent=c.phone;$('recItem').textContent=c.itemType;const paid=snap?.cumulativePaidAfter??c.cumulativePaid,rem=snap?.remainingAfter??((+c.finalTotalPrice||0)-(+c.cumulativePaid||0));$('recTotalDebt').textContent=formatMoney(c.finalTotalPrice);$('recMonthly').textContent=formatMoney(c.monthlyInstallment);$('recPaid').textContent=formatMoney(paid);$('recRemaining').textContent=formatMoney(rem);$('recNextDue').textContent=c.nextDueDate||'منتهي';$('recCurrentPaymentRow').classList.toggle('hidden',!(amount>0));$('recCurrentPaymentAmount').textContent=formatMoney(amount);$('recPaymentDate').textContent=pd||'---';$('recAmountsWords').textContent=`المتبقي: ${words(rem)}`;$('recNote').textContent=currentCompanySettings.receiptNote||'شكراً لتعاملكم معنا';$('btnShareReceipt').onclick=()=>window.open(`https://wa.me/${phone964(c.phone)}?text=${encodeURIComponent('تم إصدار إيصال رقم '+$('recTxId').textContent)}`,'_blank')};
-window.printStatement=()=>{if(currentViewedClient)generateReceipt(currentViewedClient,0)};
-window.closeReceipt=()=>switchTab('newPayment');
+window.printClientsList=()=>{
+  const rows=allClientsData.map(c=>{
+    const rem=Math.max((+c.finalTotalPrice||0)-(+c.cumulativePaid||0),0),st=getClientStatus(c);
+    return `<tr>
+      <td>${c.name||''}</td>
+      <td>${c.phone||''}</td>
+      <td>${c.itemType||''}</td>
+      <td>${statusLabel[st]||st}</td>
+      <td>${formatMoney(c.finalTotalPrice)}</td>
+      <td>${formatMoney(c.cumulativePaid)}</td>
+      <td>${formatMoney(rem)}</td>
+      <td>${rem>0?(c.nextDueDate||'---'):'منتهي'}</td>
+      <td>${c.notes||''}</td>
+    </tr>`;
+  }).join('');
 
-const tabs={dashboard:{el:'sec-dashboard',title:'لوحة الإشعارات',icon:'fa-chart-line'},newContract:{el:'sec-newContract',title:'إضافة عقد',icon:'fa-file-contract'},newPayment:{el:'sec-newPayment',title:'إضافة قسط',icon:'fa-money-bill-wave'},clients:{el:'sec-clients',title:'إدارة العملاء',icon:'fa-users'},receiptSearch:{el:'sec-receiptSearch',title:'بحث الإيصال',icon:'fa-receipt'},overdue:{el:'sec-overdue',title:'معالجة المتأخرين',icon:'fa-user-clock'},reports:{el:'sec-reports',title:'التقارير الشهرية',icon:'fa-chart-bar'},settings:{el:'sec-settings',title:'إعدادات الشركة',icon:'fa-cogs'}};
-window.switchTab=async id=>{Object.values(tabs).forEach(t=>$(t.el).classList.add('hidden'));$('receipt-section').classList.add('hidden');document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));$(tabs[id].el).classList.remove('hidden');$('nav-'+id).classList.add('active');$('currentTabTitle').innerHTML=`<i class="fas ${tabs[id].icon}"></i> ${tabs[id].title}`;if(['dashboard','clients','newPayment','receiptSearch','overdue','reports'].includes(id))await loadAllClients();if(id==='overdue')renderOverdue();if(id==='reports'){const now=new Date(),def=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;if(!$('reportMonth').value)$('reportMonth').value=def;renderReports()}};
+  const w=window.open('','_blank');
+  if(!w){
+    alert('المتصفح منع فتح نافذة الطباعة. فعّل Popups لهذا الموقع.');
+    return;
+  }
+  w.document.open();
+  w.document.write(`<!DOCTYPE html>
+  <html dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <title>كشف العملاء</title>
+    <style>
+      body{font-family:Tahoma,Arial,sans-serif;padding:20px;background:#fff;color:#111}
+      h2{color:#1e3a8a;margin-top:0}
+      table{width:100%;border-collapse:collapse}
+      th,td{border:1px solid #ccc;padding:8px;text-align:right;font-size:12px}
+      th{background:#1e3a8a;color:#fff}
+      button{padding:8px 16px;background:#1e3a8a;color:#fff;border:0;border-radius:6px;cursor:pointer;margin-bottom:12px}
+      @media print{button{display:none}}
+    </style>
+  </head>
+  <body>
+    <h2>كشف العملاء</h2>
+    <button onclick="window.print()">طباعة</button>
+    <table>
+      <thead>
+        <tr>
+          <th>الاسم</th><th>الهاتف</th><th>المادة</th><th>الحالة</th>
+          <th>الكلي</th><th>المسدد</th><th>المتبقي</th><th>الاستحقاق</th><th>ملاحظة</th>
+        </tr>
+      </thead>
+      <tbody>${rows || '<tr><td colspan="9" style="text-align:center">لا توجد بيانات</td></tr>'}</tbody>
+    </table>
+  </body>
+  </html>`);
+  w.document.close();
+};
+
+window.generateReceipt=(c,amount=0,rid=null,pd=null,snap=null)=>{
+  Object.values(tabs).forEach(t=>{
+    const el=$(t.el);
+    if(el) el.classList.add('hidden');
+  });
+
+  $('receipt-section').classList.remove('hidden');
+  setTimeout(()=>{window.scrollTo({top:0,behavior:'smooth'});const mc=document.querySelector('.main-content');if(mc)mc.scrollTo({top:0,behavior:'smooth'});},50);
+
+  if(currentCompanySettings.logoUrl){
+    $('recLogo').src=currentCompanySettings.logoUrl;
+    $('recLogo').classList.remove('hidden');
+    $('recLogoText').classList.add('hidden');
+  }else{
+    $('recLogo').classList.add('hidden');
+    $('recLogoText').classList.remove('hidden');
+  }
+
+  $('recCompanyName').textContent=currentCompanySettings.companyName||'اسم الشركة';
+  $('recManager').textContent=currentCompanySettings.managerName||'المدير';
+  $('recPhone').textContent=currentCompanySettings.phone||'---';
+  $('recAddress').textContent=currentCompanySettings.address||'---';
+
+  const receiptNumber=rid||c.transactionId||'---';
+  $('recTxId').textContent=receiptNumber;
+  $('recDate').textContent=new Date().toLocaleDateString('ar-EG');
+  $('recNextDue').textContent=c.nextDueDate||'منتهي';
+
+  $('recClientName').textContent=c.name||'---';
+  $('recClientPhone').textContent=c.phone||'---';
+  $('recItem').textContent=c.itemType||'---';
+
+  const paid=snap?.cumulativePaidAfter??c.cumulativePaid??0;
+  const remaining=snap?.remainingAfter??((+c.finalTotalPrice||0)-(+c.cumulativePaid||0));
+
+  $('recTotalDebt').textContent=formatMoney(c.finalTotalPrice);
+  $('recMonthly').textContent=formatMoney(c.monthlyInstallment);
+  $('recPaid').textContent=formatMoney(paid);
+  $('recRemaining').textContent=formatMoney(remaining);
+
+  const hasPayment=amount>0;
+  $('recCurrentPaymentRow').classList.toggle('hidden',!hasPayment);
+  $('recCurrentPaymentAmount').textContent=hasPayment?formatMoney(amount):'0';
+  $('recPaymentDate').textContent=pd||'---';
+
+  $('recAmountsWords').textContent=hasPayment?words(amount):`المتبقي: ${words(remaining)}`;
+  $('recNote').textContent=currentCompanySettings.receiptNote||'شكراً لتعاملكم معنا';
+
+  $('btnShareReceipt').onclick=()=>{
+    const paymentText=amount>0?`\nالمبلغ المدفوع الآن: ${formatMoney(amount)} د.ع\nتاريخ الدفع: ${pd||'---'}`:'';
+    const msg=`${currentCompanySettings.companyName||'نظام الأقساط'}\n`+
+      `إيصال دفع قسط رقم: ${receiptNumber}\n`+
+      `الزبون: ${c.name||'---'}\n`+
+      `المادة: ${c.itemType||'---'}${paymentText}\n`+
+      `المبلغ الكلي: ${formatMoney(c.finalTotalPrice)} د.ع\n`+
+      `إجمالي المدفوع: ${formatMoney(paid)} د.ع\n`+
+      `المتبقي: ${formatMoney(remaining)} د.ع\n`+
+      `الاستحقاق القادم: ${c.nextDueDate||'منتهي'}\n`+
+      `شكراً لتعاملكم معنا.`;
+    window.open(`https://wa.me/${phone964(c.phone)}?text=${encodeURIComponent(msg)}`,'_blank');
+  };
+};
+
+async function loadFinanceData(){
+  try{
+    const qs=await getDocs(collection(db,'finance'));
+    allFinanceData=[];
+    qs.forEach(d=>allFinanceData.push({id:d.id,...d.data()}));
+    renderFinanceTable();
+    if($('sec-dashboard') && !$('sec-dashboard').classList.contains('hidden')) renderDashboard();
+  }catch(e){console.error(e);}
+}
+
+window.saveFinanceRecord=async()=>{
+  const type=$('financeType').value;
+  const amount=toKilo($('financeAmount').value);
+  const source=$('financeSource').value.trim();
+  const dueDate=$('financeDueDate').value;
+  const note=$('financeNote').value.trim();
+  if(amount<=0){alert('أدخل مبلغ صحيح');return}
+  if(type==='debt'&&!source){alert('اكتب اسم الدائن');return}
+  const rec={type,amount,source,dueDate,note,createdAt:new Date().toISOString()};
+  showLoader();
+  try{
+    const id='FIN-'+Date.now();
+    await setDoc(doc(db,'finance',id),rec);
+    ['financeAmount','financeSource','financeDueDate','financeNote'].forEach(x=>{$(x).value=''});
+    await loadFinanceData();
+    renderDashboard();
+    alert('تم حفظ العملية');
+  }catch(e){alert('خطأ: '+e.message)}
+  hideLoader();
+};
+
+window.deleteFinanceRecord=async(id)=>{
+  if(!confirm('حذف هذه العملية؟'))return;
+  showLoader();
+  try{
+    await deleteDoc(doc(db,'finance',id));
+    await loadFinanceData();
+    renderDashboard();
+  }catch(e){alert('خطأ: '+e.message)}
+  hideLoader();
+};
+
+function financeTypeLabel(t){
+  return t==='debt'?'دين خارجي عليك':t==='capital'?'رأس مال خاص':'استخدام من الصندوق';
+}
+
+function renderFinanceTable(){
+  const tb=$('financeTableBody');
+  if(!tb)return;
+  tb.innerHTML=allFinanceData.length?allFinanceData.map(r=>`
+    <tr>
+      <td>${financeTypeLabel(r.type)}</td>
+      <td>${formatMoney(r.amount)} د.ع</td>
+      <td>${r.source||'---'}</td>
+      <td>${r.dueDate||'---'}</td>
+      <td>${r.note||''}</td>
+      <td><button class="btn btn-danger" style="padding:6px 10px;font-size:.82rem" onclick="deleteFinanceRecord('${r.id}')">حذف</button></td>
+    </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:#666">لا توجد عمليات تمويل أو ديون.</td></tr>';
+}
+
+function getTotalExternalDebt(){
+  return allFinanceData.filter(x=>x.type==='debt').reduce((s,x)=>s+(+x.amount||0),0);
+}
+
+
+window.closeReceipt=()=>{
+  $('receipt-section')?.classList.add('hidden');
+  switchTab('newPayment');
+};
+
+window.printStatement=()=>{
+  if(!currentViewedClient){
+    alert('اختر زبون أولاً.');
+    return;
+  }
+  generateReceipt(currentViewedClient,0,currentViewedClient.transactionId||null,null,null);
+  setTimeout(()=>window.print(),250);
+};
+
+const tabs={dashboard:{el:'sec-dashboard',title:'لوحة الإشعارات',icon:'fa-chart-line'},newContract:{el:'sec-newContract',title:'إضافة عقد',icon:'fa-file-contract'},newPayment:{el:'sec-newPayment',title:'إضافة قسط',icon:'fa-money-bill-wave'},clients:{el:'sec-clients',title:'إدارة العملاء',icon:'fa-users'},receiptSearch:{el:'sec-receiptSearch',title:'بحث الإيصال',icon:'fa-receipt'},overdue:{el:'sec-overdue',title:'معالجة المتأخرين',icon:'fa-user-clock'},finance:{el:'sec-finance',title:'التمويل والديون',icon:'fa-coins'},reports:{el:'sec-reports',title:'التقارير الشهرية',icon:'fa-chart-bar'},settings:{el:'sec-settings',title:'إعدادات الشركة',icon:'fa-cogs'}};
+window.switchTab=async id=>{window.closeMobileSidebar?.();window.scrollTo({top:0,behavior:'smooth'});const mc=document.querySelector('.main-content');if(mc)mc.scrollTo({top:0,behavior:'smooth'});if(!tabs[id]) return; Object.values(tabs).forEach(t=>$(t.el)?.classList.add('hidden'));$('receipt-section').classList.add('hidden');document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));$(tabs[id].el)?.classList.remove('hidden');$('nav-'+id)?.classList.add('active');$('currentTabTitle').innerHTML=`<i class="fas ${tabs[id].icon}"></i> ${tabs[id].title}`;if(['dashboard','clients','newPayment','receiptSearch','overdue','reports','finance'].includes(id))await loadAllClients();if(['dashboard','finance'].includes(id))await loadFinanceData();if(id==='overdue')renderOverdue();if(id==='finance')renderFinanceTable();if(id==='reports'){const now=new Date(),def=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;if(!$('reportMonth').value)$('reportMonth').value=def;renderReports()}};
 
 window.addEventListener('error',e=>{hideLoader();console.error(e.error||e.message)});
 window.addEventListener('unhandledrejection',e=>{hideLoader();console.error(e.reason)});
